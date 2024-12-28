@@ -1,0 +1,53 @@
+{
+	"skill": {
+		"rexZ": {
+			"name" : "DIRECTIVE: Inject",
+			"description" : "Fire three syringes for <y>3x50% damage.</c> The last syringe <y>weakens</c> and heals for <g>50% of damage dealt.</c>\n<y>Weaken</c> reduces <b>movement speed</c>, <y>damage</c>, and <g>armor.</c>"
+		},
+		"rexX": {
+			"name" : "Seed Barrage",
+			"description" : "<y>Lay roots into the ground</c> and <y>gain control of a marker.</c> Jump or use Primary to exit. While rooted: <r>Costs 10% of your current health.</c> Launch a mortar at the marker's location for <y>250% damage.</c>"
+    },
+    "rexC": {
+			"name" : "DIRECTIVE: Disperse",
+			"description" : "Fire a shockwave that <y>pushes away enemies</c> and <y>weakens</c> enemies hit. <g>Heals 6% health for every target hit</c>. <b>Has strong recoil</c>. While rooted: Shockwave <y>hits a bigger area.</c>"
+		},
+		"rexV": {
+			"name" : "Tangling Roots",
+			"description" : "<r>Costs 25% of your current health</c>. Attack with spiky roots from the ground, hitting <y>enemies around you</c> for <y>4x280% damage, snaring</c>, and <g>healing for 25% of damage dealt.</c>"
+		},
+    "rexVUpgrade": {
+			"name" : "Lashing Roots",
+			"description" : "<r>Costs 25% of your current health</c>. Attack with spiky roots from the ground, hitting <y>enemies around you</c> for <y>6x280% damage, snaring</c>, and <g>healing for 35% of damage dealt.</c>"
+		},
+    "rexXAlt": {
+			"name": "DIRECTIVE: Impede",
+			"description" : "Hold to <y>gain control of a marker.</c> Release to launch a pod at the marker's location that <y>covers the surrounding area in brambles</c>, dealing <y>95% damage over time</c> and <y>weakening enemies.</c>"
+		},
+    "rexCAlt": {
+			"name" : "Noxious Bloom",
+			"description" : "<r>Costs 20% of your current health</c>. <y>Launch forwards</c> and leave behind a flower that <y>detonates, stunning</c> and dealing <y>480% damage.</c>"
+		},
+    "rexVAlt": {
+			"name" : "DIRECTIVE: Stimulate",
+			"description" : "Fire a syringe that deals <y>330% damage</c> and <b>generates a healing zone</c> around the enemy it hits, restoring <g>5% health per second</c> to allies. When the enemy <r>dies</c>, allies in the zone recover <g>25% health.</c>"
+		},
+    "rexVAltUpgrade": {
+			"name" : "DIRECTIVE: Vitalize",
+			"description" : "Fire a syringe that deals <y>330% damage</c> and <b>generates a large healing zone</c> around the enemy it hits, restoring <g>7% health per second</c> to allies. When the enemy <r>dies</c>, allies in the zone recover <g>35% health.</c>"
+		}
+	},
+
+	"survivor": {
+		"rex": {
+			"endQuote": "..and so they left, growing anew with every step.",
+			"description": "<y>REX</c> is a unique character that uses health as a resource to <y>cast devastating skills from afar</c>. Cycling between your <y>healing</c> and <y>damaging</c> skills will maximize your damage output. Weakening a strong enemy <y>reduces their strength</c> and <y>improves your healing against them.</c>",
+			"name": "REX",
+			"nameUpper": "REX",
+			"story": "???",
+            "id": "???",
+            "departure": "Storm Center Theta,\nSector 11,\nKuiper Belt",
+            "arrival": "evoTech Hydroponics Ltd,\n385 Strideway,\nCydonia,\nMars"
+		}
+	}
+}
