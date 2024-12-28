@@ -10,14 +10,12 @@ Adds REX from Risk of Rain 2. His moveset has been redesigned for 2D; he can now
 
 His alternate abilities from Risk of Rain 2 have been redesigned in equal measure. DIRECTIVE: Impede covers the targeted area in weakening brambles, Noxious Bloom is a self-damaging dash that leaves behind a stunning explosive plant, and DIRECTIVE: Stimulate is a rework of DIRECTIVE: Harvest that generates a healing zone around the victim and grants a healing burst when the victim dies!
 
-You can find my plan(t)s for this mod with [this Google Docs link](https://docs.google.com/document/d/17NjBI1dSbf5zBgHex7idRlTMCnbQ0A0n4GqGItbEkf0/edit?tab=t.0#heading=h.6d3d9bfn3hdt)
-
 ---
 
 ## Credits
-Spritework - meeeeee :3333
-Coding - meeeee :3333 and the [RoRR Modding Server](https://discord.gg/VjS57cszMq) which this mod would be impossible without
-many thanks in particular to randomcatdude and klehrik for helping me figure out on-hit heals
+- Spritework - meeeeee :3333
+- Coding - meeeee :3333 and the [RoRR Modding Server](https://discord.gg/VjS57cszMq) which this mod would be impossible without
+  - many thanks in particular to randomcatdude and klehrik for helping me figure out on-hit heals
 
 ---
 
