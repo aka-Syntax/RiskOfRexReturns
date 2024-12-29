@@ -44,16 +44,18 @@ local function initialize()
   local sprite_fall_half = Resources.sprite_load(NAMESPACE, "rex_fall_half", path.combine(PATH, "Sprites", "sRexFallHalf.png"), 1, 14, 10)
 
   -- skill attacks (so far)
+  local sprite_syringe = Resources.sprite_load(NAMESPACE, "rex_syringe", path.combine(PATH, "Sprites", "sRexSyringe.png"), 1, 14, 3)
+  local sprite_syringe_weaken = Resources.sprite_load(NAMESPACE, "rex_syringe_weaken", path.combine(PATH, "Sprites", "sRexSyringe_Weaken.png"), 1, 24, 5)
+  local sprite_weaken = Resources.sprite_load(NAMESPACE, "rex_weaken_debuff", path.combine(PATH, "Sprites", "sDebuffWeaken.png"), 1, 10, 10)
+  
+  local sprite_boom_disperse = Resources.sprite_load(NAMESPACE, "rex_boom_disperse", path.combine(PATH, "Sprites", "sRexDisperse_Explosion.png"), 4, 15, 27)
   local sprite_atk_inject = Resources.sprite_load(NAMESPACE, "rex_atk_inject", path.combine(PATH, "Sprites", "sRexAtk_Inject.png"), 12, 15, 27)
-  local sprite_atk_disperse = Resources.sprite_load(NAMESPACE, "rex_atk_disperse", path.combine(PATH, "Sprites", "sRexDisperse.png"), 6, 15, 27)
+  local sprite_atk_disperse = Resources.sprite_load(NAMESPACE, "rex_atk_disperse", path.combine(PATH, "Sprites", "sRexDisperse.png"), 6, 22, 49)
 
   local sprite_skills = Resources.sprite_load(NAMESPACE, "rex_skills", path.combine(PATH, "Sprites", "sRexSkills.png"), 11)
   local sprite_portrait = Resources.sprite_load(NAMESPACE, "rex_portrait", path.combine(PATH, "Sprites", "sRexPortrait.png"), 3)
   local sprite_portrait_small = Resources.sprite_load(NAMESPACE, "rex_portrait_small", path.combine(PATH, "Sprites", "sRexPortraitSmall.png"))
   local sprite_select = Resources.sprite_load(NAMESPACE, "rex_select", path.combine(PATH, "Sprites", "sRexSelect.png"), 23, 56, 0)
-  local sprite_syringe = Resources.sprite_load(NAMESPACE, "rex_syringe", path.combine(PATH, "Sprites", "sRexSyringe.png"), 1, 14, 3)
-  local sprite_syringe_weaken = Resources.sprite_load(NAMESPACE, "rex_syringe_weaken", path.combine(PATH, "Sprites", "sRexSyringe_Weaken.png"), 1, 24, 5)
-  local sprite_weaken = Resources.sprite_load(NAMESPACE, "rex_weaken_debuff", path.combine(PATH, "Sprites", "sDebuffWeaken.png"), 1, 10, 10)
   local sprite_hit = Resources.sprite_load(NAMESPACE, "rex_hit", path.combine(PATH, "Sprites", "sRexHit.png"), 1, 7, 4)
 
   rex:set_primary_color(Color.from_rgb(151, 177, 95))
@@ -366,11 +368,7 @@ local function initialize()
     actor:skill_util_exit_state_on_anim_end()
   end)
 
-  Callback.add("onAttackHit", "rex_inject_heal", function(self, other, result, args)
-    -- because args[2] killed my grandma
-    local hit_info = Hit_Info.wrap(args[2].value)
-
-    Helper.log_struct(hit_info)
+  Callback.add("onAttackHit", "rex_inject_heal", function(hit_info)
     if hit_info.attack_info.rex_third_hit_heal == 1 then
       -- heal for 50% of the damage dealt
       hit_info.parent:heal(hit_info.damage * 0.5)
@@ -384,7 +382,7 @@ local function initialize()
 
   -- set skill icon, damage, cooldown
   skill_disperse:set_skill_icon(sprite_skills, 5)
-  skill_disperse:set_skill_properties(0, 1.5*60)
+  skill_disperse:set_skill_properties(0, 1*60)
   skill_disperse:set_skill_animation(sprite_atk_disperse)
 
   skill_disperse:clear_callbacks()
@@ -409,27 +407,22 @@ local function initialize()
     actor:skill_util_fix_hspeed()
 
     local animation = actor:actor_get_skill_animation(skill_disperse)
-    actor:actor_animation_set(animation, 0.25)
+    actor:actor_animation_set(animation, 0.235)
 
     if actor.image_index >= 1 and data.fired == 0 then
       local buff_shadow_clone = Buff.find("ror", "shadowClone")
 			for i=0, actor:buff_stack_count(buff_shadow_clone) do
         local direction = GM.cos(GM.degtorad(actor:skill_util_facing_direction()))
 
-        local spawn_offset = 5 * direction
+        local spawn_offset = 35 * direction
         local damage = actor:skill_get_damage(skill_disperse)
-        actor:fire_explosion(actor.x + spawn_offset, actor.y, 200, 200, damage)
-        -- do effect bullshit here
-
-        if actor:is_grounded() then
-          if direction < 0 then
-            actor:apply_stun(1, -1, 0)
-          end
-          actor:apply_stun(1, 1, 0)
-        else
-          
-        end
         
+        local attack = actor:fire_explosion(actor.x + spawn_offset, actor.y, 135, 80, damage, nil, sprite_boom_disperse, false) 
+        actor.pHspeed = -8 * actor.image_xscale
+        -- how do i apply knockback to enemies
+        attack.attack_info:set_stun(0)
+
+        -- apply self-knockback
 
       end
       data.fired = 1
