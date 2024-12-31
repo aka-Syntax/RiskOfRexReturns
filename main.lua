@@ -23,43 +23,49 @@ local function initialize()
   
   rex:clear_callbacks()
   
+  local load_sprite = function (id, filename, frames, orig_x, orig_y, speed, left, top, right, bottom) 
+    local sprite_path = path.combine(PATH, "Sprites",  filename)
+    return Resources.sprite_load(NAMESPACE, id, sprite_path, frames, orig_x, orig_y, speed, left, top, right, bottom)
+  end
+  
   local sprites = {
-    idle = Resources.sprite_load(NAMESPACE, "rex_idle", path.combine(PATH, "Sprites", "sRexIdle.png"), 1, 16, 27),
-    walk = Resources.sprite_load(NAMESPACE, "rex_walk", path.combine(PATH, "Sprites", "sRexWalk.png"), 4, 21, 27),
-    jump = Resources.sprite_load(NAMESPACE, "rex_jump", path.combine(PATH, "Sprites", "sRexJump.png"), 1, 14, 28),
-    jump_peak = Resources.sprite_load(NAMESPACE, "rex_jump_peak", path.combine(PATH, "Sprites", "sRexJumpPeak.png"), 1, 14, 28),
-    fall = Resources.sprite_load(NAMESPACE, "rex_fall", path.combine(PATH, "Sprites", "sRexFall.png"), 1, 14, 28),
+    idle = load_sprite("rex_idle", "sRexIdle.png", 1, 16, 27),
+    walk = load_sprite("rex_walk", "sRexWalk.png", 4, 21, 27),
+    jump = load_sprite("rex_jump", "sRexJump.png", 1, 14, 28),
+    jump_peak = load_sprite("rex_jump_peak", "sRexJumpPeak.png", 1, 14, 28),
+    fall = load_sprite("rex_fall", "sRexFall.png", 1, 14, 28),
     -- note: redo climb later
-    climb = Resources.sprite_load(NAMESPACE, "rex_climb", path.combine(PATH, "Sprites", "sRexClimb.png"), 6, 12, 29),
+    climb = load_sprite("rex_climb", "sRexClimb.png", 6, 12, 29),
     -- todo: death animation
-    decoy = Resources.sprite_load(NAMESPACE, "rex_decoy", path.combine(PATH, "Sprites", "sRexDecoy.png"), 4, 15, 27),
+    decoy = load_sprite("rex_decoy", "sRexDecoy.png", 4, 15, 27),
     -- todo: drone/drone_shoot animation
   }
 
   -- sprite halves for strafing
-  local sprite_idle_half = Resources.sprite_load(NAMESPACE, "rex_idle_half", path.combine(PATH, "Sprites", "sRexIdleHalf.png"), 1, 16, 4)
-  local sprite_walk_half = Resources.sprite_load(NAMESPACE, "rex_walk_half", path.combine(PATH, "Sprites", "sRexWalkHalf.png"), 4, 19, 4)
-  local sprite_jump_half = Resources.sprite_load(NAMESPACE, "rex_jump_half", path.combine(PATH, "Sprites", "sRexJumpHalf.png"), 1, 14, 10)
-  local sprite_jump_peak_half = Resources.sprite_load(NAMESPACE, "rex_jump_peak_half", path.combine(PATH, "Sprites", "sRexJumpPeakHalf.png"), 1, 14, 10)
-  local sprite_fall_half = Resources.sprite_load(NAMESPACE, "rex_fall_half", path.combine(PATH, "Sprites", "sRexFallHalf.png"), 1, 14, 10)
+  local sprite_idle_half = load_sprite("rex_idle_half", "sRexIdleHalf.png", 1, 16, 4)
+  local sprite_walk_half = load_sprite("rex_walk_half", "sRexWalkHalf.png", 4, 19, 4)
+  local sprite_jump_half = load_sprite("rex_jump_half", "sRexJumpHalf.png", 1, 14, 10)
+  local sprite_jump_peak_half = load_sprite("rex_jump_peak_half", "sRexJumpPeakHalf.png", 1, 14, 10)
+  local sprite_fall_half = load_sprite("rex_fall_half", "sRexFallHalf.png", 1, 14, 10)
 
   -- skill attacks (so far)
-  local sprite_syringe = Resources.sprite_load(NAMESPACE, "rex_syringe", path.combine(PATH, "Sprites", "sRexSyringe.png"), 1, 14, 3)
-  local sprite_syringe_weaken = Resources.sprite_load(NAMESPACE, "rex_syringe_weaken", path.combine(PATH, "Sprites", "sRexSyringe_Weaken.png"), 1, 24, 5)
-  local sprite_weaken = Resources.sprite_load(NAMESPACE, "rex_weaken_debuff", path.combine(PATH, "Sprites", "sDebuffWeaken.png"), 1, 10, 10)
+  local sprite_hit = load_sprite("rex_hit", "sRexHit.png", 1, 7, 4)
+  local sprite_syringe = load_sprite("rex_syringe", "sRexSyringe.png", 1, 13, 5)
+  local sprite_syringe_weaken = load_sprite("rex_syringe_weaken", "sRexSyringe_Weaken.png", 1, 18, 8)
+  local sprite_weaken = load_sprite("rex_weaken_debuff", "sDebuffWeaken.png", 1, 10, 10)
   
-  local sprite_boom_disperse = Resources.sprite_load(NAMESPACE, "rex_boom_disperse", path.combine(PATH, "Sprites", "sRexDisperse_Explosion.png"), 4, 15, 27)
-  local sprite_atk_inject = Resources.sprite_load(NAMESPACE, "rex_atk_inject", path.combine(PATH, "Sprites", "sRexAtk_Inject.png"), 12, 15, 27)
-  local sprite_atk_disperse = Resources.sprite_load(NAMESPACE, "rex_atk_disperse", path.combine(PATH, "Sprites", "sRexDisperse.png"), 6, 22, 49)
+  local sprite_boom_disperse = load_sprite("rex_boom_disperse", "sRexDisperse_Explosion.png", 4, 15, 27)
+  local sprite_atk_inject = load_sprite("rex_atk_inject", "sRexAtk_Inject.png", 12, 15, 27)
+  local sprite_atk_disperse = load_sprite("rex_atk_disperse", "sRexDisperse.png", 6, 23, 49)
 
-  local sprite_skills = Resources.sprite_load(NAMESPACE, "rex_skills", path.combine(PATH, "Sprites", "sRexSkills.png"), 11)
-  local sprite_portrait = Resources.sprite_load(NAMESPACE, "rex_portrait", path.combine(PATH, "Sprites", "sRexPortrait.png"), 3)
-  local sprite_portrait_small = Resources.sprite_load(NAMESPACE, "rex_portrait_small", path.combine(PATH, "Sprites", "sRexPortraitSmall.png"))
-  local sprite_select = Resources.sprite_load(NAMESPACE, "rex_select", path.combine(PATH, "Sprites", "sRexSelect.png"), 23, 56, 0)
-  local sprite_hit = Resources.sprite_load(NAMESPACE, "rex_hit", path.combine(PATH, "Sprites", "sRexHit.png"), 1, 7, 4)
+  -- skills, portraits, etc
+  local sprite_skills = load_sprite("rex_skills", "sRexSkills.png", 11)
+  local sprite_portrait = load_sprite("rex_portrait", "sRexPortrait.png", 3)
+  local sprite_portrait_small = load_sprite("rex_portrait_small", "sRexPortraitSmall.png")
+  local sprite_select = load_sprite("rex_select", "sRexSelect.png", 23, 56, 0)
 
+  -- set color and misc sprites
   rex:set_primary_color(Color.from_rgb(151, 177, 95))
-
   rex.sprite_portrait = sprite_portrait
   rex.sprite_portrait_small = sprite_portrait_small
   rex.sprite_loadout = sprite_select
@@ -156,7 +162,7 @@ local function initialize()
 
   -- set icon, damage, and cooldown
   skill_inject:set_skill_icon(sprite_skills, 0)
-  skill_inject:set_skill_properties(0.5, 0)
+  skill_inject:set_skill_properties(0.55, 0)
 
   -- set up syringe projectile
   local obj_syringe = Object.new(NAMESPACE, "rex_syringe")
@@ -170,6 +176,8 @@ local function initialize()
   obj_syringe:onStep(function(inst)
     local data = inst:get_data()
     inst.x = inst.x + data.horizontal_velocity
+    inst.y = inst.y + data.vertical_velocity
+    inst.image_angle = GM.point_direction(0, 0, data.horizontal_velocity, data.vertical_velocity)
 
     -- collision with another actor destroys the syringe
     local actor_collisions, _ = inst:get_collisions(gm.constants.pActorCollisionBase)
@@ -233,6 +241,8 @@ local function initialize()
   obj_syringe_weaken:onStep(function(inst)
     local data = inst:get_data()
     inst.x = inst.x + data.horizontal_velocity
+    inst.y = inst.y + data.vertical_velocity
+    inst.image_angle = GM.point_direction(0, 0, data.horizontal_velocity, data.vertical_velocity)
 
     -- collision with another actor destroys the syringe
     local actor_collisions, _ = inst:get_collisions(gm.constants.pActorCollisionBase)
@@ -307,59 +317,49 @@ local function initialize()
 
     -- code for shooting goes here
     -- fires on frames 0, 2, and 4
-    -- todo: fix the fuck out of that heal
     if actor.image_index2 >= data.shots * 2 and data.shots < 3 then
       local direction = GM.cos(GM.degtorad(actor:skill_util_facing_direction()))
       local buff_shadow_clone = Buff.find("ror", "shadowClone")
       for i=0, actor:buff_stack_count(buff_shadow_clone) do
         -- if firing the third syringe: fire big syringe
         if actor.image_index2 >= 4 then
-          local spawn_offset = 15 * direction
+          local spawn_offset = 10 * direction
           local syringe = obj_syringe_weaken:create(actor.x + spawn_offset, actor.y-5)
           local syringe_data = syringe:get_data()
           syringe_data.horizontal_velocity = 20 * direction
-          -- flip the syringe if it travels left
-          if syringe_data.horizontal_velocity < 0 then
-            syringe.image_xscale = -1
-          end
+          syringe_data.vertical_velocity = -0.7
           syringe_data.parent = actor
 
           -- Pass the damage coefficient to the bullet
           local damage = actor:skill_get_damage(skill_inject)
           syringe_data.damage_coefficient = damage
+        -- firing the second syringe
+        elseif actor.image_index2 >= 2 then
+          local spawn_offset = 5 * direction
+          local syringe = obj_syringe:create(actor.x + spawn_offset, actor.y-5)
+          local syringe_data = syringe:get_data()
+          syringe_data.horizontal_velocity = 20 * direction
+          syringe_data.vertical_velocity = -0.35
+          syringe_data.parent = actor
+
+          -- Pass the damage coefficient to the bullet
+          local damage = actor:skill_get_damage(skill_inject)
+          syringe_data.damage_coefficient = damage
+
         -- if firing the first syringe: trigger heaven cracker
-        elseif actor.image_index2 >= 0 then
+        else
           if not actor:skill_util_update_heaven_cracker(actor, dmg) then
             local spawn_offset = 5 * direction
             local syringe = obj_syringe:create(actor.x + spawn_offset, actor.y-5)
             local syringe_data = syringe:get_data()
             syringe_data.horizontal_velocity = 20 * direction
-            -- flip the syringe if it travels left
-            if syringe_data.horizontal_velocity < 0 then
-              syringe.image_xscale = -1
-            end
+            syringe_data.vertical_velocity = 0
             syringe_data.parent = actor
 
             -- Pass the damage coefficient to the bullet
             local damage = actor:skill_get_damage(skill_inject)
             syringe_data.damage_coefficient = damage
           end
-
-        -- else: fire lame syringe
-        else
-          local spawn_offset = 5 * direction
-          local syringe = obj_syringe:create(actor.x + spawn_offset, actor.y-5)
-          local syringe_data = syringe:get_data()
-          syringe_data.horizontal_velocity = 20 * direction
-          -- flip the syringe if it travels left
-          if syringe_data.horizontal_velocity < 0 then
-            syringe.image_xscale = -1
-          end
-          syringe_data.parent = actor
-
-          -- Pass the damage coefficient to the bullet
-          local damage = actor:skill_get_damage(skill_inject)
-          syringe_data.damage_coefficient = damage
         end
       end
       data.shots = data.shots + 1
@@ -370,8 +370,8 @@ local function initialize()
 
   Callback.add("onAttackHit", "rex_inject_heal", function(hit_info)
     if hit_info.attack_info.rex_third_hit_heal == 1 then
-      -- heal for 50% of the damage dealt
-      hit_info.parent:heal(hit_info.damage * 0.5)
+      -- heal for 60% of the damage dealt
+      hit_info.parent:heal(hit_info.damage * 0.6)
     end
   end)
 
@@ -382,7 +382,7 @@ local function initialize()
 
   -- set skill icon, damage, cooldown
   skill_disperse:set_skill_icon(sprite_skills, 5)
-  skill_disperse:set_skill_properties(0, 1*60)
+  skill_disperse:set_skill_properties(0, 0.1*60)
   skill_disperse:set_skill_animation(sprite_atk_disperse)
 
   skill_disperse:clear_callbacks()
@@ -410,21 +410,47 @@ local function initialize()
     actor:actor_animation_set(animation, 0.235)
 
     if actor.image_index >= 1 and data.fired == 0 then
-      local buff_shadow_clone = Buff.find("ror", "shadowClone")
-			for i=0, actor:buff_stack_count(buff_shadow_clone) do
-        local direction = GM.cos(GM.degtorad(actor:skill_util_facing_direction()))
+      local direction = GM.cos(GM.degtorad(actor:skill_util_facing_direction()))
+      local spawn_offset = 50 * direction
+      local damage = actor:skill_get_damage(skill_disperse)
 
-        local spawn_offset = 35 * direction
-        local damage = actor:skill_get_damage(skill_disperse)
-        
-        local attack = actor:fire_explosion(actor.x + spawn_offset, actor.y, 135, 80, damage, nil, sprite_boom_disperse, false) 
-        actor.pHspeed = -8 * actor.image_xscale
-        -- how do i apply knockback to enemies
-        attack.attack_info:set_stun(0)
+      local attack = actor:fire_explosion(actor.x + spawn_offset, actor.y, 135, 80, damage, sprite_boom_disperse, nil, false)
+      -- attack.image_xscale = actor.image_xscale -- doesnt work :/
+      -- currently this attack hits for 0 damage: how can i make it so it doesn't show damage numbers at all
+      -- and still applies its effects
+      
+      local particle = Particle.find("ror", "WispGTracer")
+      particle:set_direction(direction - 50, direction + 50, 0, 0)
+      particle:create_color(actor.x, actor.y, Color.TEXT_GREEN, 15)
 
-        -- apply self-knockback
+      -- determine hitbox size
+      local left, right = actor.x - 75, actor.x + 75
+      local bias = 60
+      left = math.min(left, left - bias)
+      right = math.max(right, right + bias)
+      
+      local victims = List.new()
+      actor:collision_rectangle_list(left, actor.y - 40, right, actor.y + 40, gm.constants.pActor, false, true, victims, false)
 
+      local disperse_heal = 0
+      for _, victim in ipairs(victims) do
+        if victim.team ~= actor.team then
+          victim:buff_apply(debuff_weaken, 3*60)
+          -- do i apply enemy knockback here? also how
+          disperse_heal = disperse_heal + 1
+        end
       end
+      victims:destroy()
+      
+      if disperse_heal ~= 0 then
+        -- if possible, change this to heal individually instead of as one tick
+        -- make heal numbers climb like mando shotgun
+        actor:heal(actor.maxhp * 0.06 * disperse_heal)
+      end
+
+      -- apply self-knockback
+      actor.pHspeed = -10 * actor.image_xscale
+      -- issue: if i hold left or right, the knockback gets a lot weaker
       data.fired = 1
     end
 

@@ -2,7 +2,7 @@
 	"skill": {
 		"rexZ": {
 			"name" : "DIRECTIVE: Inject",
-			"description" : "Fire three syringes for <y>3x50% damage.</c> The last syringe <y>weakens</c> and heals for <g>50% of damage dealt.</c>\n<y>Weaken</c> reduces <b>movement speed</c>, <y>damage</c>, and <g>armor.</c>"
+			"description" : "Fire three syringes for <y>3x55% damage.</c> The last syringe <y>weakens</c> and heals for <g>60% of damage dealt.</c>\n<y>Weaken</c> reduces <b>movement speed</c>, <y>damage</c>, and <g>armor.</c>"
 		},
 		"rexX": {
 			"name" : "Seed Barrage",
