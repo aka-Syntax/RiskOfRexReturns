@@ -2,10 +2,10 @@
 	"name": "RiskOfRexReturns",
 	"version_number": "1.0.0",
 	"website_url": "",
-	"description": "..and so they left, growing anew with every step. | Adds REX from Risk of Rain 2 as a playable survivor complete with a unique moveset redesign.",
+	"description": "..and so they left, growing anew with every step.",
 	"dependencies": [
-		"ReturnOfModding-ReturnOfModding-1.0.48",
-		"RoRRModdingToolkit-RoRR_Modding_Toolkit-1.1.25",
-		"MGReturns-ENVY-1.1.1"
+		"ReturnOfModding-ReturnOfModding-1.1.14",
+		"ReturnsAPI-ReturnsAPI-0.1.42",
+		"LuaENVY-ENVY-1.2.0"
 	]
 }

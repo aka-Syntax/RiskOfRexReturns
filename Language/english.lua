@@ -1,0 +1,37 @@
+return {
+	skill = {
+		rexZ = {
+			name = "INJECT",
+			description = "Fire three syringes that deal <y>3x55% damage</c> and <b>reduce armor</c>. The last syringe has <g>30% lifesteal.</c>"
+		},
+		rexX = {
+			name = "Seed Barrage",
+			description = "<r>Costs 12% current health.</c> Fire a shell at the targeted location for <y>500% damage.</c>"
+    	},
+		rexC = {
+			name = "DISPERSE",
+			description = "Charge up and fire a shockwave for <y>30% damage</c> with <g>50% lifesteal</c>. <b>Pushes enemies away, slows,</c> and <b>reduces armor.</c>"
+		},
+		rexV = {
+			name = "Tangling Growth",
+			description = "<r>Costs 24% current health</c>. Deploy a trap that <b>drastically slows and pulls nearby enemies</c>, dealing <y>8x180% damage</c> with <g>20% lifesteal.</c>"
+		},
+		rexVUpgrade = {
+			name = "Ravenous Growth",
+			description = "<r>Costs 24% current health</c>. Deploy a trap that <b>drastically slows and pulls nearby enemies</c>, dealing <y>8x180% damage</c> with <g>20% lifesteal.</c> Trap radius increases with each pull."
+		}
+	},
+
+	survivor = {
+		rex = {
+			endQuote = "..and so they left, growing anew with every step.",
+			description = "<y>REX</c> can provide invaluable support by utilizing <y>debuffs and crowd control</c>, or sacrifice their health to output <y>devastating damage</c>. Use <y>INJECT</c> and <y>DISPERSE</c> to weaken enemies and set them up for your own skills or allies. <y>Tangling Growth</c> can <y>group up multiple monsters at once</c>, making <y>Seed Mortar</c> and other areas of effect more effective.",
+			name = "REX",
+			nameUpper = "REX",
+			story = "???",
+            id = "???",
+            departure = "Storm Center Theta,\nSector 11,\nKuiper Belt",
+            arrival = "evoTech Hydroponics Ltd,\n385 Strideway,\nCydonia,\nMars"
+		}
+	}
+}
