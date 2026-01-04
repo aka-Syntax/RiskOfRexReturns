@@ -2,15 +2,15 @@ return {
 	skill = {
 		rexZ = {
 			name = "INJECT",
-			description = "Fire three syringes that deal <y>3x55% damage</c> and <b>reduce armor</c>. The last syringe has <g>30% lifesteal.</c>"
+			description = "Fire three syringes that deal <y>3x45% damage</c> and <b>reduce armor</c>. The last syringe has <g>30% lifesteal.</c>"
 		},
 		rexX = {
-			name = "Seed Barrage",
+			name = "Seed Mortar",
 			description = "<r>Costs 12% current health.</c> Fire a shell at the targeted location for <y>500% damage.</c>"
     	},
 		rexC = {
 			name = "DISPERSE",
-			description = "Charge up and fire a shockwave for <y>30% damage</c> with <g>50% lifesteal</c>. <b>Pushes enemies away, slows,</c> and <b>reduces armor.</c>"
+			description = "Charge up and fire a shockwave for <y>50% damage</c> with <g>80% lifesteal</c>. <b>Pushes enemies away, slows,</c> and <b>reduces armor.</c>"
 		},
 		rexV = {
 			name = "Tangling Growth",
