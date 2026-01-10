@@ -23,25 +23,30 @@ local function initialize()
 	local sprite_portrait =				Sprite.new("RexPortrait", path.combine(SPRITE_PATH, "portrait.png"), 3)
 	local sprite_portrait_small =		Sprite.new("RexPortraitSmall", path.combine(SPRITE_PATH, "portraitSmall.png"))
 
-	local sprite_idle = 				Sprite.new("RexIdle", path.combine(SPRITE_PATH, "idle.png"), 1, 16, 27)
-	local sprite_idle_half = 			Sprite.new("RexIdleHalf", path.combine(SPRITE_PATH, "idleHalf.png"), 1, 16, 4)
-	local sprite_walk = 				Sprite.new("RexWalk", path.combine(SPRITE_PATH, "walk.png"), 4, 22, 27)
-	local sprite_walk_half = 			Sprite.new("RexWalkHalf", path.combine(SPRITE_PATH, "walkHalf.png"), 4, 19, 4)
-	local sprite_jump = 				Sprite.new("RexJump", path.combine(SPRITE_PATH, "jump.png"), 1, 14, 28)
-	local sprite_jump_half = 			Sprite.new("RexJumpHalf", path.combine(SPRITE_PATH, "jumpHalf.png"), 1, 14, 28)
-	local sprite_jump_peak = 			Sprite.new("RexJumpPeak", path.combine(SPRITE_PATH, "jumpPeak.png"), 1, 14, 28)
-	local sprite_jump_peak_half = 		Sprite.new("RexJumpPeakHalf", path.combine(SPRITE_PATH, "jumpPeakHalf.png"), 1, 14, 28)
-	local sprite_fall = 				Sprite.new("RexFall", path.combine(SPRITE_PATH, "fall.png"), 1, 14, 28)
-	local sprite_fall_half = 			Sprite.new("RexFallHalf", path.combine(SPRITE_PATH, "fallHalf.png"), 1, 14, 28)
+	local sprite_idle = 				Sprite.new("RexIdle", path.combine(SPRITE_PATH, "idle.png"), 1, 20, 36)
+	local sprite_idle_half = 			Sprite.new("RexIdleHalf", path.combine(SPRITE_PATH, "idleHalf.png"), 1, 20, 36)
+	local sprite_walk = 				Sprite.new("RexWalk", path.combine(SPRITE_PATH, "walk.png"), 4, 23, 36)
+	local sprite_walk_half = 			Sprite.new("RexWalkHalf", path.combine(SPRITE_PATH, "walkHalf.png"), 4, 24, 36)
+	local sprite_jump = 				Sprite.new("RexJump", path.combine(SPRITE_PATH, "jump.png"), 1, 20, 35)
+	local sprite_jump_half = 			Sprite.new("RexJumpHalf", path.combine(SPRITE_PATH, "jumpHalf.png"), 1, 17, 11) -- ???
+	local sprite_jump_peak = 			Sprite.new("RexJumpPeak", path.combine(SPRITE_PATH, "jumpPeak.png"), 1, 20, 35)
+	local sprite_jump_peak_half = 		Sprite.new("RexJumpPeakHalf", path.combine(SPRITE_PATH, "jumpPeakHalf.png"), 1, 18, 12) -- ???
+	local sprite_fall = 				Sprite.new("RexFall", path.combine(SPRITE_PATH, "jumpFall.png"), 1, 20, 35)
+	local sprite_fall_half = 			Sprite.new("RexFallHalf", path.combine(SPRITE_PATH, "jumpFallHalf.png"), 1, 19, 13) -- ???
+	local sprite_climb = 				Sprite.new("RexClimb", path.combine(SPRITE_PATH, "climb.png"), 5, 17, 26)
+	sprite_climb:set_speed(2.5)
 
-	local sprite_shoot_1 = 				Sprite.new("RexShoot1", path.combine(SPRITE_PATH, "shoot1.png"), 12, 14, 27)
-	local sprite_shoot_3 = 				Sprite.new("RexShoot3", path.combine(SPRITE_PATH, "shoot3.png"), 6, 22, 30)
+	sprite_walk:set_speed(2.5)
+
+	local sprite_shoot_1 = 				Sprite.new("RexShoot1", path.combine(SPRITE_PATH, "shoot1.png"), 12, 17, 36)
+	local sprite_shoot_2_aim = 			Sprite.new("RexShoot2Aim", path.combine(SPRITE_PATH, "shoot2aiml.png"), 1, 1, 1)
+	local sprite_shoot_2 = 				Sprite.new("RexShoot2", path.combine(SPRITE_PATH, "shoot2real.png"), 5, 5, 5)
+	local sprite_shoot_3 = 				Sprite.new("RexShoot3", path.combine(SPRITE_PATH, "shoot3.png"), 6, 24, 36)
 
 	local sprite_syringe = 				Sprite.new("RexSyringe", path.combine(SPRITE_PATH, "syringe.png"), 1, 13, 5)
 	local sprite_syringe_big = 			Sprite.new("RexSyringeBig", path.combine(SPRITE_PATH, "syringeBig.png"), 1, 18, 8)
 	local sprite_debuff_break = 		Sprite.new("RexDebuffBreak", path.combine(SPRITE_PATH, "debuffBreak.png"), 1, 9, 11)
 	local sprite_debuff_weaken = 		Sprite.new("RexDebuffWeaken", path.combine(SPRITE_PATH, "debuffWeaken.png"), 1, 12, 12)
-
 
 	rex:set_stats_base({
 		health = 120,
@@ -59,12 +64,12 @@ local function initialize()
 	rex.sprite_portrait = sprite_portrait
 	rex.sprite_portrait_small = sprite_portrait_small
 	rex.sprite_loadout = sprite_select
-
+	
 	rex.sprite_idle = sprite_idle
 	rex.sprite_title = sprite_walk
 
 	rex.primary_color = Color.from_rgb(151, 177, 95)
-	rex.cape_offset = Array.new({-3, -6, 0, -2})
+	-- rex.cape_offset = Array.new({-3, -6, 0, -2})
 
 	Callback.add(rex.on_init, function(actor)
 		actor.sprite_idle_half = Array.new({sprite_idle, sprite_idle_half, 0})
@@ -78,6 +83,7 @@ local function initialize()
 		actor.sprite_jump = sprite_jump
 		actor.sprite_jump_peak = sprite_jump_peak
 		actor.sprite_fall = sprite_fall
+		actor.sprite_climb = sprite_climb
 
 		actor:survivor_util_init_half_sprites()
 	end)
@@ -100,7 +106,7 @@ local function initialize()
 
 	local SHOOT3_DAMAGE = 0.5
 	local SHOOT3_KNOCKBACK = 9
-	local SHOOT3_RECOIL = 4
+	local SHOOT3_RECOIL = 3
 	local SHOOT3_LIFESTEAL = 0.8
 	local WEAKEN_DEBUFF_DURATION = 3 * 60
 
@@ -211,10 +217,9 @@ local function initialize()
 	local statePrimary = ActorState.new("rexPrimary")
 	primary.sprite = sprite_skills
 	primary.subimage = 0
-	primary.cooldown = 25 -- adjust
 	primary.damage = SHOOT1_DAMAGE
 	primary.is_primary = true
-	primary.is_utility = false
+	primary.cooldown = 36
 
 	Callback.add(primary.on_activate, function(actor, skill, slot)
 		actor:set_state(statePrimary)
@@ -243,12 +248,12 @@ local function initialize()
 			local buff_shadow_clone = Buff.find("shadowClone")
 			for i=0, actor:buff_count(buff_shadow_clone) do
 				if actor.image_index2 >= 4 then -- fire big syringe
-					local syringe = objSyringeBreak:create(actor.x + 30 * actor.image_xscale, actor.y)
+					local syringe = objSyringeBreak:create(actor.x + 45 * actor.image_xscale, actor.y - 3)
 					syringe.direction = actor:skill_util_facing_direction()
 					syringe.image_xscale = actor.image_xscale
 					syringe.parent = actor
 				else -- fire reg syringe
-					local syringe = objSyringe:create(actor.x + 10 * actor.image_xscale, actor.y)
+					local syringe = objSyringe:create(actor.x + 5 * actor.image_xscale, actor.y - 5)
 					syringe.direction = actor:skill_util_facing_direction()
 					syringe.image_xscale = actor.image_xscale
 					syringe.parent = actor
@@ -257,7 +262,6 @@ local function initialize()
 			--  actor:sound_play(sound_m1_shoot, 0.7, 0.8 + math.random() * 0.2) -- sound, volume, pitch
 			data.shots = data.shots + 1
 		end
-
 		actor:skill_util_exit_state_on_anim_end()
 	end)
 
@@ -266,8 +270,32 @@ local function initialize()
 	end)
 
 	-- SECONDARY: Seed Mortar
+	local priMortar = Skill.new("rexPriMortar")
+	priMortar.sprite = sprite_skills
+	priMortar.subimage = 1
+	priMortar.is_primary = false
+	priMortar.is_utility = false
+	priMortar.cooldown = 0.8 * 60
+
+	Callback.add(priMortar.on_activate, function(actor)
+		actor.firing_mortar = 1
+		actor.image_index2 = 0
+		actor:set_skill_animation(sprite_shoot_2, 0.25)
+
+		-- play sound for firing mortar
+		actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
+		local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
+		local collision_y1 = gm.variable_global_get("collision_y")
+		actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 2000, gm.constants.pBlock, true, true)
+		local collision_x2 = gm.variable_global_get("collision_x")
+		local collision_y2 = gm.variable_global_get("collision_y")
+		local oProbe = objProbe:create(collision_x2, collision_y2)
+		oProbe.parent = actor
+	end)
+
+
 	local objMortar = Object.new("rexMortar")
-	-- objMortar:set_sprite(sprite_shoot2_warn)
+	local objPreview = Object.new("rexMortarPreview")
 
 	Callback.add(objMortar.on_create, function(inst)
 		local data = Instance.get_data(inst)
@@ -280,25 +308,45 @@ local function initialize()
 
 		data.lifetime = data.lifetime - 1
 		if data.lifetime <= 0 then
+			local buff_shadow_clone = Buff.find("shadowClone")
+			for i=0, inst.parent:buff_count(buff_shadow_clone) do
+				inst.parent:fire_explosion(inst.x, inst.y - 10, 192, 192, secondary.damage, gm.constants.sEfSuperMissileExplosion, gm.constants.sSparks12)
+				-- play sound
 
+			end
+			inst:screen_shake(5)
+			inst:destroy()
 			-- BOOOM!!!!!!!!!!!!!!!!
 		end
 	end)
 
+	-- indicator for mortar
+	Callback.add(objMortar.on_draw, function(inst)
+		local data = Instance.find(inst)
+		local radius = (1 - data.lifetime / data.lifetime_max) * 96
+		gm.draw_set_color(Color.from_hsv(184, 224, 155))
+		gm.draw_circle(self.x, self.y, radius, true)
+	end)
 
-	local priMortar = Skill.new("rexPriMortar")
-	priMortar.sprite = sprite_skills
-	priMortar.subimage = 1
-	priProbe.is_primary = false
-	priProbe.is_utility = false
-	priProde.cooldown = 0.8 * 60
-	
-	Callback.add(priMortar.on_activate, function(actor)
-		actor.image_index2 = 0
-		actor:set_skill_animation(sprite_shoot_2, 0.25)
+	Callback.add(objPreview.on_draw, function(inst)
+		local actor = inst.parent
 
-		-- play sound for firing mortar
-		
+		-- need 2 make this work on enemies
+		if actor:get_active_skill(0).skill_id == priMortar.value then
+			if actor.callingprobe == 0 then
+				actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
+				local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
+				local collision_y1 = gm.variable_global_get("collision_y")
+				actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 2000, gm.constants.pBlock, true, true)
+				local collision_x2 = gm.variable_global_get("collision_x")
+				local collision_y2 = gm.variable_global_get("collision_y")
+				gm.draw_set_colour(Color.from_hsv(0, 0, 100))
+				gm.draw_line_width(collision_x2, collision_y2, collision_x2, collision_y2 - 600, 1)
+				gm.draw_circle(collision_x2, collision_y2, 96, true)
+			end
+		else
+			inst:destroy()
+		end
 	end)
 
 	local stateSecondary = ActorState.new("rexSecondary")
@@ -308,21 +356,53 @@ local function initialize()
 	secondary.damage = 5.0
 	secondary.does_change_activity_state = true
 	secondary.hold_facing_direction = true
-	probe.override_strafe_direction = true
+	secondary.override_strafe_direction = true
 
 	Callback.add(secondary.on_activate, function(actor)
 		actor:set_state(stateSecondary)
 	end)
 
-	Callback.add(stateSecondary.on_enter, function(actor, data) 
+	Callback.add(stateSecondary.on_enter, function(actor, data)
+		actor:skill_util_strafe_init()
+		actor:skill_util_strafe_turn_init()
 
+		if gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) ~= 0 then
+			actor.hold_facing_direction_xscale = gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) -- stupid dumb idiotic bullshit fuckery, apparently vanilla code also uses that lmao
+		else
+			actor.hold_facing_direction_xscale = actor.image_xscale
+		end
+
+		actor.sprite_index2 = sprite_shoot_2_aim
+		actor.image_index2 = 0
+		actor.firing_mortar = 0
+		actor:add_skill_override(0, priMortar, 10)
+		-- play sound
+
+		local preview = objPreview:create(actor.x, actor.y)
+		preview.parent = actor
+
+	end)	
+
+	Callback.add(stateSecondary.on_step, function(actor, data)
+		local second = ActorSkill.wrap(actor:get_active_skill(1))
+		second:freeze_cooldown()
+
+		if actor.firing_mortar == 1 then
+			actor.sprite_index2 = sprite_shoot_2
+			actor.image_index2 = 0
+			actor.firing_mortar = 0
+		end
+
+		-- if not holding down secondary: exit state
+		if not Util.bool(actor.x_skill) then
+			actor:skill_util_exit_state_on_anim_end()
+		end
 	end)
 
-
-
-
-
-
+	Callback.add(stateSecondary.on_exit, function(actor, data)
+		actor:skill_util_strafe_exit()
+		actor:remove_skill_override(0, priMortar, 10)
+	end)
 
 	-- UTILITY: DISPERSE
 	local stateUtility = ActorState.new("rexUtility")
@@ -345,7 +425,7 @@ local function initialize()
 	end)
 
 	Callback.add(stateUtility.on_step, function(actor, data)
-		actor:skill_util_fix_hspeed()
+		-- actor:skill_util_fix_hspeed()
 		actor:actor_animation_set(sprite_shoot_3, 0.25)
 
 		if actor.image_index >= 1 and data.fired == 0 then
@@ -354,15 +434,16 @@ local function initialize()
 			boom.knockback = SHOOT3_KNOCKBACK
 			boom.knockback_direction = actor.image_xscale
 
-			actor.pHspeed = actor.pHspeed + actor.pHmax * -SHOOT3_RECOIL * actor.image_xscale
-
 			local direction = actor:skill_util_facing_direction()
 			local particle = Particle.find("WispGTracer")
 			particle:set_direction(direction - 50, direction + 50, 0, 0)
-			particle:create_color(actor.x, actor.y, Color.TEXT_GREEN, 20)
+			particle:create_color(actor.x, actor.y, Color.from_rgb(179, 201, 139), 20)
+
+			actor.pHspeed = actor.pHspeed + actor.pHmax * -SHOOT3_RECOIL * actor.image_xscale
 
 			data.fired = 1
 		end
+
 		actor:skill_util_exit_state_on_anim_end()
 	end)
 
