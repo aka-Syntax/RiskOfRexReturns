@@ -10,14 +10,15 @@ local PATH = _ENV["!plugins_mod_folder_path"]
 local NAMESPACE = "aka_Syntax"
 
 local SPRITE_PATH = path.combine(PATH, "Sprites")
+local SOUND_PATH = path.combine(PATH, "Sounds")
 
 -- ========== Main ==========
 
 local function initialize()
   local rex = Survivor.new("rex")
-	-- put between merc and loader
+	-- how the hell do i put this guy inbetween merc and laoder
 
-	-- poke all sprirtes
+	-- Sprites
 	local sprite_select = 				Sprite.new("rexSelect", path.combine(SPRITE_PATH, "select.png"), 23, 56, 0)
 	local sprite_skills =				Sprite.new("RexSkills", path.combine(SPRITE_PATH, "skills.png"), 6)
 	local sprite_portrait =				Sprite.new("RexPortrait", path.combine(SPRITE_PATH, "portrait.png"), 3)
@@ -28,13 +29,13 @@ local function initialize()
 	local sprite_walk = 				Sprite.new("RexWalk", path.combine(SPRITE_PATH, "walk.png"), 4, 23, 36)
 	local sprite_walk_half = 			Sprite.new("RexWalkHalf", path.combine(SPRITE_PATH, "walkHalf.png"), 4, 23, 36)
 	local sprite_jump = 				Sprite.new("RexJump", path.combine(SPRITE_PATH, "jump.png"), 1, 20, 35)
-	local sprite_jump_half = 			Sprite.new("RexJumpHalf", path.combine(SPRITE_PATH, "jumpHalf.png"), 1, 17, 11) -- ???
+	local sprite_jump_half = 			Sprite.new("RexJumpHalf", path.combine(SPRITE_PATH, "jumpHalf.png"), 1, 17, 11)
 	local sprite_jump_peak = 			Sprite.new("RexJumpPeak", path.combine(SPRITE_PATH, "jumpPeak.png"), 1, 20, 35)
-	local sprite_jump_peak_half = 		Sprite.new("RexJumpPeakHalf", path.combine(SPRITE_PATH, "jumpPeakHalf.png"), 1, 18, 12) -- ???
+	local sprite_jump_peak_half = 		Sprite.new("RexJumpPeakHalf", path.combine(SPRITE_PATH, "jumpPeakHalf.png"), 1, 18, 12)
 	local sprite_fall = 				Sprite.new("RexFall", path.combine(SPRITE_PATH, "jumpFall.png"), 1, 20, 35)
-	local sprite_fall_half = 			Sprite.new("RexFallHalf", path.combine(SPRITE_PATH, "jumpFallHalf.png"), 1, 19, 13) -- ???
+	local sprite_fall_half = 			Sprite.new("RexFallHalf", path.combine(SPRITE_PATH, "jumpFallHalf.png"), 1, 19, 13)
 	local sprite_climb = 				Sprite.new("RexClimb", path.combine(SPRITE_PATH, "climb.png"), 5, 17, 26)
-	sprite_climb:set_speed(2.5)
+	-- sprite_climb:set_speed(2.5) -- why does this not work vro
 
 	local sprite_shoot_1 = 				Sprite.new("RexShoot1", path.combine(SPRITE_PATH, "shoot1.png"), 10, 17, 36)
 	local sprite_shoot_2_aim = 			Sprite.new("RexShoot2Aim", path.combine(SPRITE_PATH, "shoot2aiml.png"), 1, 25, 59)
@@ -48,8 +49,25 @@ local function initialize()
 
 	local sprite_flower = 				Sprite.new("RexFlower", path.combine(SPRITE_PATH, "flowerSeed.png"), 1, 10, 10)
 	local sprite_flower_bloom = 		Sprite.new("RexFlowerBloom", path.combine(SPRITE_PATH, "flowerBloom.png"), 8, 10, 10)
-	local sprite_flower_idle = 			Sprite.new("RexFlowerIdle", path.combine(SPRITE_PATH, "flowerIdle.png"), 8, 10, 10)
+	local sprite_flower_idle = 			Sprite.new("RexFlowerIdle", path.combine(SPRITE_PATH, "flowerIdle.png"), 1, 21, 25)
 	local sprite_flower_pull = 			Sprite.new("RexFlowerPull", path.combine(SPRITE_PATH, "flowerPull.png"), 8, 10, 10)
+
+	-- Sounds
+	local sound_select = 				Sound.new("rexSelect", path.combine(SOUND_PATH, "select.ogg"))
+	local sound1_shoot = 				Sound.new("rexShoot1_Shoot", path.combine(SOUND_PATH, "shoot1_shoot.ogg"))
+	local sound1_hit = 					Sound.new("rexShoot1_Hit", path.combine(SOUND_PATH, "shoot1_hit.ogg"))
+	local sound1_3hit = 				Sound.new("rexShoot1_3Hit", path.combine(SOUND_PATH, "shoot1_3hit.ogg"))
+
+	local sound2_launch = 				Sound.new("rexShoot2_Launch", path.combine(SOUND_PATH, "shoot2_launch.ogg"))
+	local sound2_impact = 				Sound.new("rexShoot2_Impact", path.combine(SOUND_PATH, "shoot2_hit.ogg"))
+
+	local sound3_charge = 				Sound.new("rexShoot3_Charge", path.combine(SOUND_PATH, "shoot3_charge.ogg"))
+	local sound3_shoot = 				Sound.new("rexShoot3_Shoot", path.combine(SOUND_PATH, "shoot3_shoot.ogg"))
+
+	local sound4_shoot = 				Sound.new("rexShoot4_Shoot", path.combine(SOUND_PATH, "shoot4_shoot.ogg"))
+	local sound4_impact = 				Sound.new("rexShoot4_Impact", path.combine(SOUND_PATH, "shoot4_hit.ogg"))
+	local sound4_pull = 				Sound.new("rexShoot4_Pull", path.combine(SOUND_PATH, "shoot4_pull.ogg"))
+	local sound4_expire = 				Sound.new("rexShoot4_Expire", path.combine(SOUND_PATH, "shoot4_expire.ogg"))
 
 	rex:set_stats_base({
 		health = 120,
@@ -60,7 +78,7 @@ local function initialize()
 	rex:set_stats_level({
 		health = 44,
 		damage = 3,
-		regen = 0.015,
+		regen = 0.014,
 		armor = 3
 	})
 
@@ -72,7 +90,8 @@ local function initialize()
 	rex.sprite_title = sprite_walk
 
 	rex.primary_color = Color.from_rgb(151, 177, 95)
-	-- rex.cape_offset = Array.new({-3, -6, 0, -2})
+	-- rex.select_sound_id = sound_select
+	rex.cape_offset = Array.new({-5, -7, 0, 3})
 
 	Callback.add(rex.on_init, function(actor)
 		actor.sprite_idle_half = Array.new({sprite_idle, sprite_idle_half, 0})
@@ -96,38 +115,81 @@ local function initialize()
 	local secondary = rex:get_skills(Skill.Slot.SECONDARY)[1]
 	local utility = rex:get_skills(Skill.Slot.UTILITY)[1]
 	local special = rex:get_skills(Skill.Slot.SPECIAL)[1]
-	local specialUpgrade = Skill.new("rexVUpgrade")
+	-- local specialUpgrade = Skill.new("rexVUpgrade")
 
 	-- magic number bullshit
 	local SHOOT1_DAMAGE = 0.4
 	local SHOOT1_SPEED = 20
 	local SHOOT1_LIFETIME = 2 * 60
-	local SHOOT1_LIFESTEAL = 0.6
+	local SHOOT1_LIFESTEAL = 0.5
 	local BREAK_DEBUFF_DURATION = 6 * 60
 
+	local SHOOT2_DAMAGE = 3.5
 	local SHOOT2_DELAY = 0.5 * 60
+	local SHOOT2_COOLDOWN = 0.8 * 60
 
-	local SHOOT3_DAMAGE = 1
-	local SHOOT3_KNOCKBACK = 9
-	local SHOOT3_RECOIL = 3
-	local SHOOT3_LIFESTEAL = 1
+	local SHOOT3_DAMAGE = 0.5
+	local SHOOT3_KNOCKBACK = 6.5
+	local SHOOT3_RECOIL = 3.5
+	local SHOOT3_LIFESTEAL = 0.75
 	local WEAKEN_DEBUFF_DURATION = 3 * 60
 
-	local GROWTH_TICK_TIME = 90      -- 1.5 seconds
-	local GROWTH_PULSES = 8
-	local GROWTH_RADIUS = 140
-	local GROWTH_PULL = 0.6
-	local GROWTH_SLOW = 0.5
-	local GROWTH_HEAL = 0.25
+	local SHOOT4_DAMAGE = 1.5
+	local SHOOT4_TICK_TIME = 90
+	local SHOOT4_PULSES = 8
+	local SHOOT4_RADIUS = 160
+	local SHOOT4_PULL_LIFETIME = 0.2 * 60
+	local SHOOT4_LIFESTEAL = 0.15
 
 	local ATTACK_TAG_SYRINGE = 1
 	local ATTACK_TAG_SYRINGE_B = 2
 	local ATTACK_TAG_BOOM = 3
+	local ATTACK_TAG_GROWTH = 4
 
 	-- Self-damage function
-	local function rex_self_damage(actor, percent)
-		local recoil = actor:fire_direct(actor, (actor.hp * percent)/actor.damage, 0, actor.x, actor.y, nil, false).attack_info
+	-- just doing what midas does
+	local DAMAGE_INFLICT_FLAGS = {
+		ignore_armor = 1 << 0,
+		nonlethal = 1 << 1,
+		pierce_shield = 1 << 2,
+		ignore_invincibility = 1 << 3,
+	}
+
+	local function rex_inst_damage(actor, percent)
+		local flags = DAMAGE_INFLICT_FLAGS.ignore_armor
+					+ DAMAGE_INFLICT_FLAGS.nonlethal
+					+ DAMAGE_INFLICT_FLAGS.ignore_invincibility
+		gm.damage_inflict(actor.id, actor.hp * percent, flags, -4, actor.x, actor.y, actor.hp * percent, 2, Color.GRAY, false);
 	end
+
+	-- Function for finding the closest enemy on a line
+	-- Re-inventing RoRML functions from first principles
+	local function find_horizontal_enemy(actor)
+		local dir = actor.image_xscale
+		local start_x = actor.x
+		local base_y = actor.y + 10
+
+		local closest
+		local closest_dist = math.huge
+
+		for _, enemy in ipairs(Instance.find_all(gm.constants.pActor)) do
+			if enemy ~= actor and actor:attack_collision_canhit(enemy) then
+				if math.abs(enemy.y - base_y) <= 80 then
+					if (enemy.x - start_x) * dir > 0 and math.abs(enemy.x - start_x) <= 250 then
+						local d = math.abs(enemy.x - start_x)
+						if d < closest_dist then
+							closest = enemy
+							closest_dist = d
+						end
+					end
+				end
+			end
+		end
+
+		return closest
+	end
+
+	local buff_mirror = Buff.find("shadowClone")
 
 	-- Debuffs
 	local debuffRexBreak = Buff.new("rexBreak")
@@ -183,7 +245,7 @@ local function initialize()
 				local direct = inst.parent:fire_direct(actor, primary.damage, inst.direction, inst.x, inst.y).attack_info
 				direct.__rex_info = ATTACK_TAG_SYRINGE
 
-				-- gm.sound_play_at(sound_m1_hit, 1, 0.3 + math.random() * 0.9, inst.x, inst.y)
+				gm.sound_play_at(sound1_hit.value, 0.7, 0.6 + math.random() * 0.1, inst.x, inst.y)
 				inst:destroy()
 				return
 			end
@@ -216,7 +278,7 @@ local function initialize()
 				local direct = inst.parent:fire_direct(actor, primary.damage, inst.direction, inst.x, inst.y).attack_info
 				direct.__rex_info = ATTACK_TAG_SYRINGE_B
 
-				-- gm.sound_play_at(sound_m1_hit, 1, 0.3 + math.random() * 0.9, inst.x, inst.y)
+				gm.sound_play_at(sound1_3hit.value, 0.7, 0.6 + math.random() * 0.1, inst.x, inst.y)
 				inst:destroy()
 				return
 			end
@@ -234,7 +296,7 @@ local function initialize()
 	primary.subimage = 0
 	primary.damage = SHOOT1_DAMAGE
 	primary.is_primary = true
-	primary.cooldown = 36 -- 0.6s
+	primary.cooldown = 40
 
 	Callback.add(primary.on_activate, function(actor, skill, slot)
 		actor:set_state(statePrimary)
@@ -253,28 +315,47 @@ local function initialize()
 		actor.sprite_index2 = sprite_shoot_1
 		-- this function animates the upper half-sprite for you and controls the speed multiplier.
 		-- takes in the desired sprite speed (gets capped to 1 internally), and move speed multiplier while strafing, ranges around 0.5
-    	actor:skill_util_strafe_update(0.4 * actor.attack_speed, 0.45)
+    	actor:skill_util_strafe_update(0.45 * actor.attack_speed, 0.45)
 		actor:skill_util_step_strafe_sprites()
 		actor:skill_util_strafe_turn_update()
 
 		-- fire the bullet every 2nd frame (may change to every 3rd)
 		if actor.image_index2 >= data.shots * 2 and data.shots < 3 then
-			-- play firing sound
-			local buff_shadow_clone = Buff.find("shadowClone")
-			for i=0, actor:buff_count(buff_shadow_clone) do
+			local dir = actor:skill_util_facing_direction()
+
+			actor.z_count = actor.z_count + 1
+			local heaven_cracker_count = actor:item_count(Item.find("heavenCracker"))
+			local cracker_shot = false
+
+			if heaven_cracker_count > 0 and actor.z_count >= 5 - heaven_cracker_count then
+				cracker_shot = true
+				actor.z_count = 0
+			end
+
+			for i=0, actor:buff_count(buff_mirror) do
 				if actor.image_index2 >= 4 then -- fire big syringe
-					local syringe = objSyringeBreak:create(actor.x + 45 * actor.image_xscale, actor.y - 3)
-					syringe.direction = actor:skill_util_facing_direction()
-					syringe.image_xscale = actor.image_xscale
-					syringe.parent = actor
+					if cracker_shot then
+						local syringeBlast = actor:fire_bullet(actor.x, actor.y, 700, dir, primary.damage, 1, gm.constants.sSparks1, Tracer.DRILL).attack_info
+						syringeBlast.__rex_info = ATTACK_TAG_SYRINGE_B
+					else
+						local syringe = objSyringeBreak:create(actor.x + (i * 20) + 22 * actor.image_xscale, actor.y - 3)
+						syringe.direction = dir
+						syringe.image_xscale = actor.image_xscale
+						syringe.parent = actor
+					end
 				else -- fire reg syringe
-					local syringe = objSyringe:create(actor.x + 5 * actor.image_xscale, actor.y - 5)
-					syringe.direction = actor:skill_util_facing_direction()
-					syringe.image_xscale = actor.image_xscale
-					syringe.parent = actor
+					if cracker_shot then
+						local syringeBlast = actor:fire_bullet(actor.x, actor.y, 700, dir, primary.damage, 1, gm.constants.sSparks1, Tracer.DRILL).attack_info
+						syringeBlast.__rex_info = ATTACK_TAG_SYRINGE
+					else
+						local syringe = objSyringe:create(actor.x + (i * 20) + 7 * actor.image_xscale, actor.y - 5)
+						syringe.direction = dir
+						syringe.image_xscale = actor.image_xscale
+						syringe.parent = actor
+					end
 				end
 			end
-			--  actor:sound_play(sound_m1_shoot, 0.7, 0.8 + math.random() * 0.2) -- sound, volume, pitch
+			actor:sound_play(sound1_shoot, 0.7, 0.8 + math.random() * 0.2)
 			data.shots = data.shots + 1
 		end
 		actor:skill_util_exit_state_on_anim_end()
@@ -302,10 +383,9 @@ local function initialize()
 		end
 
 		if data.lifetime <= 0 then
-			local buff_shadow_clone = Buff.find("shadowClone")
-			for i=0, inst.parent:buff_count(buff_shadow_clone) do
-				inst.parent:fire_explosion(inst.x, inst.y - 10, 150, 1, secondary.damage, gm.constants.sEfSuperMissileExplosion, gm.constants.sSparks12)
-				-- play sound
+			for i=0, inst.parent:buff_count(buff_mirror) do
+				inst.parent:fire_explosion(inst.x + (i * 20), inst.y, 150, 150, secondary.damage, gm.constants.sEfSuperMissileExplosion, gm.constants.sSparks12)
+				gm.sound_play_at(sound2_impact.value, 0.5, 0.9 + math.random() * 0.2, inst.x, inst.y)
 			end
 			inst:screen_shake(5)
 			inst:destroy()
@@ -329,15 +409,21 @@ local function initialize()
 		-- need 2 make this work on enemies
 		if actor:get_active_skill(1).skill_id == secondary.value then
 			if actor.aiming == 1 then
-				actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
-				local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
-				local collision_y1 = gm.variable_global_get("collision_y")
-				actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 2000, gm.constants.pBlock, true, true)
-				local collision_x2 = gm.variable_global_get("collision_x")
-				local collision_y2 = gm.variable_global_get("collision_y")
+				local target = find_horizontal_enemy(actor)
+				if target then
+					inst.x = target.x
+					inst.y = target.y
+				else
+					inst.x = actor.x + 250 * actor.image_xscale
+					inst.y = actor.y + 10
+				end
+
 				gm.draw_set_colour(Color.from_hsv(0, 0, 100))
-				gm.draw_line_width(collision_x2, collision_y2, collision_x2, collision_y2 - 600, 1)
-				gm.draw_circle(collision_x2, collision_y2, 96, true)
+
+				for offset = 0, 15 * 35, 35 do
+					gm.draw_line_width(inst.x, inst.y - offset, inst.x, inst.y - offset - 20, 1)
+				end
+				gm.draw_circle(inst.x, inst.y, 75, true)
 			else
 				inst:destroy()
 			end
@@ -346,8 +432,8 @@ local function initialize()
 
 	secondary.sprite = sprite_skills
 	secondary.subimage = 2
-	secondary.cooldown = 1.5 * 60
-	secondary.damage = 3.5
+	secondary.cooldown = SHOOT2_COOLDOWN
+	secondary.damage = SHOOT2_DAMAGE
 	secondary.does_change_activity_state = true
 	secondary.hold_facing_direction = true
 	secondary.override_strafe_direction = true
@@ -404,19 +490,24 @@ local function initialize()
 		actor:skill_util_step_strafe_sprites()
 
 		if data.fired == 0 then
-			log.debug("hi")
-			rex_self_damage(actor, 0.12)
+			rex_inst_damage(actor, 0.12)
 
-			-- play sound for firing mortar
-			actor:collision_line_advanced(actor.x, actor.y + 10, actor.x + 150 * actor.image_xscale, actor.y + 10, gm.constants.pBlock, true, true)
-			local collision_x1 = gm.variable_global_get("collision_x") - 2 * actor.image_xscale
-			local collision_y1 = gm.variable_global_get("collision_y")
-			actor:collision_line_advanced(collision_x1, collision_y1, collision_x1 - 10 * actor.image_xscale, actor.y + 2000, gm.constants.pBlock, true, true)
-			local collision_x2 = gm.variable_global_get("collision_x")
-			local collision_y2 = gm.variable_global_get("collision_y")
+			local target = find_horizontal_enemy(actor)
 
-			local oMortar = objMortar:create(collision_x2, collision_y2)
+			local spawn_x, spawn_y
+
+			if target then
+				spawn_x = target.x
+				spawn_y = target.y
+			else
+				spawn_x = actor.x + 250 * actor.image_xscale
+				spawn_y = actor.y + 10
+			end
+
+			local oMortar = objMortar:create(spawn_x, spawn_y)
 			oMortar.parent = actor
+
+			actor:sound_play(sound2_launch.value, 0.5, 0.9 + math.random() * 0.1)
 
 			data.fired = 1
 		end
@@ -435,6 +526,7 @@ local function initialize()
 	utility.damage = SHOOT3_DAMAGE
 	utility.is_primary = false
 	utility.is_utility = true
+	utility.required_interrupt_priority = ActorState.InterruptPriority.SKILL_INTERRUPT_PERIOD
 
 	Callback.add(utility.on_activate, function(actor, skill, slot)
 		actor:set_state(stateUtility)
@@ -444,7 +536,7 @@ local function initialize()
 		actor.image_index = 0
 		data.fired = 0
 
-		-- actor:sound_play(sound_shift_windup, 0.3, 0.9 + math.random() * 0.9)
+		actor:sound_play(sound3_charge, 0.3, 0.9 + math.random() * 0.1)
 	end)
 
 	Callback.add(stateUtility.on_step, function(actor, data)
@@ -452,17 +544,20 @@ local function initialize()
 		actor:actor_animation_set(sprite_shoot_3, 0.25)
 
 		if actor.image_index >= 1 and data.fired == 0 then
-			local boom = actor:fire_explosion(actor.x + (80 * actor.image_xscale), actor.y, 160, 60, utility.damage, nil, nil).attack_info
-			boom.__rex_info = ATTACK_TAG_BOOM
-			boom.knockback = SHOOT3_KNOCKBACK
-			boom.knockback_direction = actor.image_xscale
-
+			for i=0, actor:buff_count(buff_mirror) do
+				local boom = actor:fire_explosion(actor.x + (80 * actor.image_xscale) + (i * 20), actor.y, 160, 70, utility.damage, nil, nil).attack_info
+				boom.__rex_info = ATTACK_TAG_BOOM
+				boom.knockback = SHOOT3_KNOCKBACK
+				boom.knockback_direction = actor.image_xscale
+			end
 			local direction = actor:skill_util_facing_direction()
 			local particle = Particle.find("WispGTracer")
 			particle:set_direction(direction - 50, direction + 50, 0, 0)
 			particle:create_color(actor.x, actor.y, Color.from_rgb(179, 201, 139), 20)
 
-			actor.pHspeed = actor.pHspeed + actor.pHmax * -SHOOT3_RECOIL * actor.image_xscale
+			actor.pHspeed = actor.pHmax * SHOOT3_RECOIL * -actor.image_xscale
+
+			actor:sound_play(sound3_shoot, 1, 0.9 + math.random() * 0.9)
 
 			data.fired = 1
 		end
@@ -470,46 +565,117 @@ local function initialize()
 		actor:skill_util_exit_state_on_anim_end()
 	end)
 
-	-- SPECIAL: Tangling Growth
-	local stateSpecial = ActorState.new("rexSpecial")
-	special.sprite = sprite_skills
-	special.subimage = 4
-	special.cooldown = 15 * 60
-	special.damage = 1.8
+	Callback.add(stateUtility.on_get_interrupt_priority, function(actor, data)
+		if actor.image_index >= 3 then
+			return ActorState.InterruptPriority.ANY
+		end
+	end)
 
-	-- When special ios activated, enter a stateSpecial ActorState
-	-- In the stateSpecial state, create an objFlowerBomb projectile.
-	-- On impact with an enemy or terrain it creates an objFlower 
-	-- Every 1.5s, objFlower deals damage to every enemy in a radius,
-	-- slows them down, pulls them towards the objFlower's location,
-	-- and heals rex for 25% of damage dealt
-	-- objFlower pulls 8 times before expiring
+	-- SPECIAL: Tangling Growth
+	local debuffRexRoot = Buff.new("rexRoot")
+	debuffRexRoot.show_icon = false
+	debuffRexRoot.is_timed = true
+	debuffRexRoot.is_debuff = true
+	debuffRexRoot.max_stack = 1
+
+	-- stops enemy movement
+	RecalculateStats.add(function(actor, api)
+		if actor:buff_count(debuffRexRoot) > 0 then
+			api.pHmax_mult(0)
+		end
+	end)
+
+	local objFlowerPull = Object.new("rexFlowerPull")
+
+	Callback.add(objFlowerPull.on_create, function(inst)
+		inst.lifetime = SHOOT4_PULL_LIFETIME
+	end)
+
+	-- i sincerely apologize to the starstorm returns team for violently dismembering their code and using the pieces to construct my own abhorrent abominations
+	Callback.add(objFlowerPull.on_step, function(inst)
+		local data = Instance.get_data(inst)
+
+		for _, target in ipairs(inst:get_collisions_circle(gm.constants.pActor, SHOOT4_RADIUS, inst.x, inst.y)) do
+			if inst.parent:attack_collision_canhit(target) and not target:is_climbing() and not target.intangible then
+				local t = 1 - inst.lifetime / SHOOT4_PULL_LIFETIME
+				local falloff = (1 - t)^2
+				local strength = math.max(0.1, 3 * falloff)	
+					
+				if GM.actor_is_classic(target) then -- classic enemies (Eg. NOT Jellyfish or Archer Bugs) are pulled horizontally to the center of the pull
+					target:move_contact_solid(180 + Math.direction(inst.x, target.y, target.x, target.y), strength)
+				elseif not GM.actor_is_boss(target) then -- non-boss, non-classic enemies are pulled directly to the center
+					target.x = target.x - math.cos(math.rad(Math.direction(inst.x, inst.y, target.x, target.y))) * strength
+					target.y = target.y + math.sin(math.rad(Math.direction(inst.x, inst.y, target.x, target.y))) * strength
+				end
+			end
+		end
+
+		inst.lifetime = inst.lifetime - 1
+		if inst.lifetime <= 0 then
+			inst:destroy()
+		end
+	end)
 
 	local objFlowerBomb = Object.new("rexGrowthBomb")
+	sprite_flower:set_collision_mask(6, 6, 8, 8)
 	objFlowerBomb:set_sprite(sprite_flower)
 
 	local objFlower = Object.new("rexTanglingGrowth")
+	sprite_flower_idle:set_collision_mask(20, 20, 20, 20)
 	objFlower:set_sprite(sprite_flower_idle)
 
 	Callback.add(objFlowerBomb.on_create, function(inst)
-		inst.speed = 4
-		inst.gravity = 0.25
+		inst.speed = 10
+		inst.gravity = 0.2
 	end)
 
 	Callback.add(objFlowerBomb.on_step, function(inst)
+		local data = Instance.get_data(inst)
+		inst.image_angle = inst.direction - 270
+
+		data.prev_x = data.prev_x or inst.x
+		data.prev_y = data.prev_y or inst.y
+
 		if inst:is_colliding(gm.constants.pBlock) then
-			local flower = objFlower:create(inst.x, inst.y)
-			flower.parent = inst.parent
-			inst:destroy()
-		end
+				-- stupid chud code i shat out my ass to try and make sure
+				-- the flower doesnt get stuck inside terrain 
+				-- which doesnt even work. fuck my stupid chud life
+				inst:collision_line_advanced(data.prev_x, data.prev_y, inst.x, inst.y, gm.constants.pBlock, true, true)
+
+				local hit_x = gm.variable_global_get("collision_x")
+				local hit_y = gm.variable_global_get("collision_y")
+				local nx = math.cos(math.rad(inst.direction + 180))
+				local ny = math.sin(math.rad(inst.direction + 180))
+				local spawn_x = hit_x + nx * 2
+				local spawn_y = hit_y + ny * 2
+
+				local flower = objFlower:create(spawn_x, spawn_y)
+				flower.parent = inst.parent
+				inst:destroy()
+				return
+			end
+
+			data.prev_x = inst.x
+			data.prev_y = inst.y
 	end)
 
 
 	Callback.add(objFlower.on_create, function(inst)
 		local data = Instance.get_data(inst)
+		data.timer = SHOOT4_TICK_TIME
+		data.pulses_left = SHOOT4_PULSES
 
-		data.timer = 0
-		data.pulses_left = GROWTH_PULSES
+		if inst:is_colliding(gm.constants.pBlock, inst.x + 5, inst.y) then
+			inst.image_angle = 90
+		elseif inst:is_colliding(gm.constants.pBlock, inst.x - 5, inst.y) then
+			inst.image_angle = 270
+		elseif inst:is_colliding(gm.constants.pBlock, inst.x, inst.y + 5) then
+			inst.image_angle = 0
+		elseif inst:is_colliding(gm.constants.pBlock, inst.x, inst.y - 5) then
+			inst.image_angle = 180
+		end
+
+		gm.sound_play_at(sound4_impact.value, 0.7, 0.5, inst.x, inst.y)
 	end)
 
 	Callback.add(objFlower.on_step, function(inst)
@@ -522,38 +688,44 @@ local function initialize()
 		end
 
 		data.timer = data.timer + 1
-
-		if data.timer >= GROWTH_TICK_TIME then
+		if data.timer >= SHOOT4_TICK_TIME then
 			data.timer = 0
 			data.pulses_left = data.pulses_left - 1
 
-			-- pulse effects
-			for _, enemy in ipairs(inst:get_collisions(gm.constants.pActorCollisionBase)) do
-				if parent:attack_collision_canhit(enemy) then
-					local info = parent:fire_explosion(inst.x, inst.y, GROWTH_RADIUS,1, special.damage, nil, nil).attack_info
-					info.__rex_info = ATTACK_TAG_GROWTH
-
-					-- pull enemy toward flower
-					local dir = gm.point_direction(enemy.x, enemy.y, inst.x, inst.y)
-					enemy.pHspeed = enemy.pHspeed + math.cos(math.rad(dir)) * GROWTH_PULL
+			for _, target in ipairs(inst:get_collisions_circle(gm.constants.pActor, SHOOT4_RADIUS, inst.x, inst.y)) do
+				if inst.parent:attack_collision_canhit(target) then
+					local dir = Math.direction(inst.x, inst.y, target.x, target.y)
+					local hit = parent:fire_direct(target, special.damage, dir, inst.x, inst.y, nil).attack_info
+					hit.__rex_info = ATTACK_TAG_GROWTH
+					
+					local objPull = objFlowerPull:create(inst.x, inst.y)
+					objPull.parent = parent
+					objPull.team = inst.team
 				end
 			end
+			gm.sound_play_at(sound4_pull.value, 0.5, 0.8 + math.random() * 0.1, inst.x, inst.y)
 
 			if data.pulses_left <= 0 then
 				inst:destroy()
+				-- play destroy sound (LATER)
 				return
 			end
 		end
 	end)
 
 	Callback.add(objFlower.on_draw, function(inst)
-		gm.draw_set_alpha(0.25)
-		gm.draw_circle(inst.x, inst.y, GROWTH_RADIUS, false)
-		gm.draw_set_alpha(1)
+		gm.draw_set_colour(Color.from_hex(0x8c4369))
+		gm.draw_circle(inst.x, inst.y, SHOOT4_RADIUS, true)
 	end)
+
+	local stateSpecial = ActorState.new("rexSpecial")
+	special.sprite = sprite_skills
+	special.subimage = 4
+	special.cooldown = 14 * 60
+	special.damage = SHOOT4_DAMAGE
 	
 	Callback.add(special.on_activate, function(actor, data)
-		actor.set_state(stateSpecial)
+		actor:set_state(stateSpecial)
 	end)
 
 	Callback.add(stateSpecial.on_enter, function(actor, data)
@@ -562,11 +734,15 @@ local function initialize()
 
 	Callback.add(stateSpecial.on_step, function(actor, data)
 		if data.fired == 0 then
-			local bomb = objFlowerBomb:create(actor.x + 20 * actor.image_xscale, actor.y - 8)
-
+			rex_inst_damage(actor, 0.24)
+			for i=0, actor:buff_count(buff_mirror) do
+				local bomb = objFlowerBomb:create(actor.x + 20 * actor.image_xscale + (i * 20), actor.y - 8)
+			end
 			bomb.parent = actor
 			bomb.direction = actor:skill_util_facing_direction()
 			bomb.image_xscale = actor.image_xscale
+
+			actor:sound_play(sound4_shoot.value, 1, 1)
 
 			data.fired = 1
 		end
@@ -578,23 +754,23 @@ local function initialize()
 	Callback.add(Callback.ON_ATTACK_HIT, function(hit_info)
 		local attack_tag = hit_info.attack_info.__rex_info
 		if attack_tag then
-			local victim = hit_info.target
+			local target = hit_info.target
 			if attack_tag == ATTACK_TAG_SYRINGE then
-				GM.apply_buff(victim, debuffRexBreak, BREAK_DEBUFF_DURATION, 1)
+				GM.apply_buff(target, debuffRexBreak, BREAK_DEBUFF_DURATION, 1)
 
 			elseif attack_tag ==  ATTACK_TAG_SYRINGE_B then
-				GM.apply_buff(victim, debuffRexBreak, BREAK_DEBUFF_DURATION, 1)
+				GM.apply_buff(target, debuffRexBreak, BREAK_DEBUFF_DURATION, 1)
 				hit_info.attack_info.parent:heal(hit_info.damage * SHOOT1_LIFESTEAL)
 
 			elseif attack_tag == ATTACK_TAG_BOOM then
-				GM.apply_buff(victim, debuffRexWeaken, WEAKEN_DEBUFF_DURATION, 1)
+				GM.apply_buff(target, debuffRexWeaken, WEAKEN_DEBUFF_DURATION, 1)
 				hit_info.attack_info.parent:heal(hit_info.damage * SHOOT3_LIFESTEAL)
 
 			elseif attack_tag == ATTACK_TAG_GROWTH then
-				-- apply slow debuff (may make this custom)
 				local slow = Buff.find("slow")
-				GM.apply_buff(victim, slow, 1 * 60, 1)
-				hit_info.attack_info.parent:heal(hit_info.damage * SHOOT3_LIFESTEAL)
+				GM.apply_buff(target, debuffRexRoot, SHOOT4_PULL_LIFETIME, 1)
+				GM.apply_buff(target, slow, 1 * 60, 1)
+				hit_info.attack_info.parent:heal(hit_info.damage * SHOOT4_LIFESTEAL)
 			end
 		end
 	end)
@@ -607,7 +783,7 @@ if hotload then initialize() end
 hotload = true
 
 
-gm.post_script_hook(gm.constants.__input_system_tick, function(self, other, result, args)
+gm.post_script_hook(gm.constants.__input_system_tick, function(inst, other, result, args)
     -- This is an example of a hook
     -- This hook in particular will run every frame after it has finished loading (i.e., "Hopoo Games" appears)
     -- You can hook into any function in the game
