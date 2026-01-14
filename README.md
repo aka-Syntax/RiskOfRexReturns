@@ -1,6 +1,8 @@
 # ..and so they left, growing anew with every step.
 Adds REX from Risk of Rain 2 as a playable character.
 
+[![](https://raw.githubusercontent.com/aka-Syntax/RiskOfRexReturns/refs/heads/main/Sprites/readme/skills.png)]()
+[![](https://raw.githubusercontent.com/aka-Syntax/RiskOfRexReturns/refs/heads/main/Sprites/readme/hi.png)]()
 [![](https://raw.githubusercontent.com/aka-Syntax/RiskOfRexReturns/refs/heads/main/Sprites/readme/rexpost.png)]()
 
 **This mod is a work-in-progress.** Various things, including but not limited to online compatibility, Scepter upgrade, number balancing, skins, certain sprites/animations, alternate skills & their respective achievement unlocks, and logbook entry, are missing or incomplete. 
