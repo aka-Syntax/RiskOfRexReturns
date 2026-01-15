@@ -1,8 +1,8 @@
 ﻿{
 	"name": "RiskOfRexReturns",
 	"version_number": "1.0.0",
-	"website_url": "",
-	"description": "..and so they left, growing anew with every step. | WORK IN PROGRESS",
+	"website_url": "https://github.com/aka-Syntax/RiskOfRexReturns",
+	"description": "..and so they left, growing anew with every step. | WORK IN PROGRESS RELEASE",
 	"dependencies": [
 		"ReturnOfModding-ReturnOfModding-1.1.14",
 		"ReturnsAPI-ReturnsAPI-0.1.42",

@@ -384,7 +384,8 @@ local function initialize()
 
 		if data.lifetime <= 0 then
 			for i=0, inst.parent:buff_count(buff_mirror) do
-				inst.parent:fire_explosion(inst.x + (i * 20), inst.y, 150, 150, secondary.damage, gm.constants.sEfSuperMissileExplosion, gm.constants.sSparks12)
+				local hit = inst.parent:fire_explosion(inst.x + (i * 20), inst.y, 150, 150, secondary.damage, gm.constants.sEfSuperMissileExplosion, gm.constants.sSparks12).attack_info
+				hit.climb = i * 8 * 1.35
 				gm.sound_play_at(sound2_impact.value, 0.5, 0.9 + math.random() * 0.2, inst.x, inst.y)
 			end
 			inst:screen_shake(5)
@@ -546,6 +547,7 @@ local function initialize()
 		if actor.image_index >= 1 and data.fired == 0 then
 			for i=0, actor:buff_count(buff_mirror) do
 				local boom = actor:fire_explosion(actor.x + (80 * actor.image_xscale) + (i * 20), actor.y, 160, 70, utility.damage, nil, nil).attack_info
+				boom.climb = i * 8 * 1.35
 				boom.__rex_info = ATTACK_TAG_BOOM
 				boom.knockback = SHOOT3_KNOCKBACK
 				boom.knockback_direction = actor.image_xscale
@@ -695,7 +697,10 @@ local function initialize()
 			for _, target in ipairs(inst:get_collisions_circle(gm.constants.pActor, SHOOT4_RADIUS, inst.x, inst.y)) do
 				if inst.parent:attack_collision_canhit(target) then
 					local dir = Math.direction(inst.x, inst.y, target.x, target.y)
-					local hit = parent:fire_direct(target, special.damage, dir, inst.x, inst.y, nil).attack_info
+					for i=0, inst.parent:buff_count(buff_mirror) do
+						local hit = parent:fire_direct(target, special.damage, dir, inst.x, inst.y, nil).attack_info
+						hit.climb = i * 8 * 1.35
+					end
 					hit.__rex_info = ATTACK_TAG_GROWTH
 					
 					local objPull = objFlowerPull:create(inst.x, inst.y)
@@ -735,9 +740,7 @@ local function initialize()
 	Callback.add(stateSpecial.on_step, function(actor, data)
 		if data.fired == 0 then
 			rex_inst_damage(actor, 0.24)
-			for i=0, actor:buff_count(buff_mirror) do
-				local bomb = objFlowerBomb:create(actor.x + 20 * actor.image_xscale + (i * 20), actor.y - 8)
-			end
+			local bomb = objFlowerBomb:create(actor.x + 20 * actor.image_xscale, actor.y - 8)
 			bomb.parent = actor
 			bomb.direction = actor:skill_util_facing_direction()
 			bomb.image_xscale = actor.image_xscale
