@@ -18,11 +18,11 @@ return {
 		},
 		rexV = {
 			name = "Tangling Growth",
-			description = "<r>Costs 24% current health</c>. Deploy a trap that <y>slows</c> and <b>pulls</c> nearby enemies, dealing <y>8x120% damage</c> with <g>15% lifesteal.</c>"
+			description = "<r>Costs 24% current health</c>. Deploy a trap that <y>slows</c> and <b>pulls</c> nearby enemies, dealing <y>8x50% damage</c> with <g>25% lifesteal.</c>"
 		},
 		rexVUpgrade = {
 			name = "Ravenous Growth",
-			description = "<r>Costs 24% current health</c>. Deploy a trap that <y>slows</c> and <b>pulls</c> nearby enemies, dealing <y>8x120% damage</c> with <g>15% lifesteal.</c> Trap radius increases with each pull."
+			description = "<r>Costs 24% current health</c>. Deploy a trap that <y>slows</c> and <b>pulls</c> nearby enemies, dealing <y>8x50% damage</c> with <g>12% lifesteal.</c> Trap radius increases with each pull."
 		}
 	},
 

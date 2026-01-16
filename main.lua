@@ -13,10 +13,6 @@ local SOUND_PATH = path.combine(PATH, "Sounds")
 
 -- ========== Main ==========
 
--- lower damage stat?
--- make m2 cancelable into itself
--- nerf growth again (LOL)
-
 local function initialize()
   local rex = Survivor.new("rex")
 	-- how the hell do i put this guy inbetween merc and laoder
@@ -693,6 +689,9 @@ local function initialize()
 
 	-- Utility: DISPERSE
 	local stateUtility = ActorState.new("rexUtility")
+	stateUtility.activity_flags = ActorState.ActivityFlag.ALLOW_ROPE_CANCEL
+	stateUtility.activity_free = true -- PLEASE WORK
+
 	utility.sprite = sprite_skills
 	utility.subimage = 2
 	utility.cooldown = 6 * 60
