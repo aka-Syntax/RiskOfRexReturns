@@ -3,6 +3,7 @@
 * Growth damage reduced from 150% to 50%
 * Growth lifesteal increased from 15% to 25%
 * Mortar can be canceled into itself, allowing for rapid fire
+* DISPERSE can be canceled by climbing
 * Fixed Growth inconsistent pull strength (for the last time)
 
 *Flower used to create a pull object for every enemy in its range, then each object would pull every enemy within its range towards it. Now it only pulls each enemy once.*

@@ -22,6 +22,7 @@ local function initialize()
 	local sprite_skills =				Sprite.new("RexSkills", path.combine(SPRITE_PATH, "skills.png"), 6)
 	local sprite_portrait =				Sprite.new("RexPortrait", path.combine(SPRITE_PATH, "portrait.png"), 3)
 	local sprite_portrait_small =		Sprite.new("RexPortraitSmall", path.combine(SPRITE_PATH, "portraitSmall.png"))
+	local sprite_credits = 				Sprite.new("RexCredits", path.combine(SPRITE_PATH, "credits.png"))
 
 	local sprite_idle = 				Sprite.new("RexIdle", path.combine(SPRITE_PATH, "idle.png"), 1, 20, 36)
 	local sprite_idle_half = 			Sprite.new("RexIdleHalf", path.combine(SPRITE_PATH, "idleHalf.png"), 1, 20, 36)
@@ -87,6 +88,7 @@ local function initialize()
 
 	rex.sprite_idle = sprite_idle
 	rex.sprite_title = sprite_walk
+	rex.sprite_credits = sprite_credits
 
 	rex.primary_color = Color.from_rgb(151, 177, 95)
 	-- rex.select_sound_id = sound_select
@@ -564,6 +566,7 @@ local function initialize()
 
 	Callback.add(objBarrage.on_draw, function(inst)
 		local data = Instance.get_data(inst)
+		local radius
 
 		if inst.lifetime >= SHOOT2B_LIFETIME then
 			local t = 1 - (inst.age / SHOOT2B_DELAY)
@@ -686,11 +689,11 @@ local function initialize()
 		end
 	end)
 
-
+	--
 	-- Utility: DISPERSE
+	--
 	local stateUtility = ActorState.new("rexUtility")
 	stateUtility.activity_flags = ActorState.ActivityFlag.ALLOW_ROPE_CANCEL
-	stateUtility.activity_free = true -- PLEASE WORK
 
 	utility.sprite = sprite_skills
 	utility.subimage = 2
@@ -698,6 +701,7 @@ local function initialize()
 	utility.damage = SHOOT3_DAMAGE
 	utility.is_primary = false
 	utility.is_utility = true
+	utility.disable_aim_stall = true
 
 	Callback.add(utility.on_activate, function(actor, skill, slot)
 		actor:set_state(stateUtility)
@@ -706,7 +710,6 @@ local function initialize()
 	Callback.add(stateUtility.on_enter, function(actor, data)
 		actor.image_index = 0
 		data.fired = 0
-
 		actor:sound_play(sound3_charge, 0.3, 0.9 + math.random() * 0.1)
 	end)
 
@@ -715,6 +718,7 @@ local function initialize()
 		actor:actor_animation_set(sprite_shoot_3, 0.25)
 
 		if actor.image_index >= 1 and data.fired == 0 then
+			actor.activity_free = 1
 			for i=0, actor:buff_count(buff_mirror) do
 				local boom = actor:fire_explosion(actor.x + (80 * actor.image_xscale) + (i * 20), actor.y, 160, 70, utility.damage, nil, nil).attack_info
 				boom.climb = i * 8 * 1.35
@@ -727,7 +731,7 @@ local function initialize()
 			particle:set_direction(direction - 50, direction + 50, 0, 0)
 			particle:create_color(actor.x, actor.y, Color.from_rgb(179, 201, 139), 20)
 
-			actor.pHspeed = actor.pHmax * SHOOT3_RECOIL * -actor.image_xscale
+			actor.pHspeed = (actor.pHspeed * 0.5) + actor.pHmax * (SHOOT3_RECOIL) * -actor.image_xscale
 
 			actor:sound_play(sound3_shoot, 1, 0.9 + math.random() * 0.9)
 
