@@ -7,8 +7,7 @@ Adds REX from Risk of Rain 2 as a playable character.
 
 **This mod is a work-in-progress.** Various things, including but not limited to online compatibility, Scepter upgrade, number balancing, skins, certain sprites/animations, alternate skills & their respective achievement unlocks, and logbook entry, are missing or incomplete. 
 
-I am currently not accepting bug reports at the moment until the mod is in a more complete state. 
-However, if you would like to shower me with unending praise and adulation, you can contact me using @aka_syntax in the [Risk of Rain Returns Modding](https://discord.gg/VjS57cszMq) server.
+If you would like to shower me with unending praise and adulation (or contact me about this mod for any other reason), you can do so using @aka_syntax in the [Risk of Rain Returns Modding](https://discord.gg/VjS57cszMq) server.
 
 ## What's Left
 - Alternate skills & Scepter upgrade

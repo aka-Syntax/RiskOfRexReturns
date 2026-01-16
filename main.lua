@@ -8,7 +8,6 @@ mods["ReturnsAPI-ReturnsAPI"].auto{
 
 local PATH = _ENV["!plugins_mod_folder_path"]
 local NAMESPACE = "aka_Syntax"
-
 local SPRITE_PATH = path.combine(PATH, "Sprites")
 local SOUND_PATH = path.combine(PATH, "Sounds")
 
@@ -117,16 +116,20 @@ local function initialize()
 	local special = rex:get_skills(Skill.Slot.SPECIAL)[1]
 	-- local specialUpgrade = Skill.new("rexVUpgrade")
 
+	local secondary2 = Skill.new("rexX2")
+	rex:add_skill(Skill.Slot.SECONDARY, secondary2)
+
 	-- magic number bullshit
-	local SHOOT1_DAMAGE = 0.4
+	local SHOOT1_DAMAGE = 0.35
 	local SHOOT1_SPEED = 20
 	local SHOOT1_LIFETIME = 2 * 60
-	local SHOOT1_LIFESTEAL = 0.5
+	local SHOOT1_LIFESTEAL = 0.3
 	local BREAK_DEBUFF_DURATION = 6 * 60
 
 	local SHOOT2_DAMAGE = 3.5
 	local SHOOT2_DELAY = 0.5 * 60
 	local SHOOT2_COOLDOWN = 0.8 * 60
+	local SHOOT2_RADIUS = 75
 
 	local SHOOT3_DAMAGE = 0.5
 	local SHOOT3_KNOCKBACK = 6.5
@@ -140,6 +143,12 @@ local function initialize()
 	local SHOOT4_RADIUS = 160
 	local SHOOT4_PULL_LIFETIME = 0.2 * 60
 	local SHOOT4_LIFESTEAL = 0.15
+
+	local SHOOT2B_DAMAGE = 2.0
+	local SHOOT2B_LIFETIME = 2 * 60
+	local SHOOT2B_BOMBS = 8
+	local SHOOT2B_DELAY = 0.25 * 60
+	local SHOOT2B_RADIUS = 100
 
 	local ATTACK_TAG_SYRINGE = 1
 	local ATTACK_TAG_SYRINGE_B = 2
@@ -167,7 +176,7 @@ local function initialize()
 	local function find_horizontal_enemy(actor)
 		local dir = actor.image_xscale
 		local start_x = actor.x
-		local base_y = actor.y + 10
+		local base_y = actor.y - 5
 
 		local closest
 		local closest_dist = math.huge
@@ -200,7 +209,6 @@ local function initialize()
 	debuffRexBreak.max_stack = 999
 	-- FIGURE OUT HOW TO DO THE STACKING NUMBER STUFF
 
-	-- reduce armor by X per stack
 	RecalculateStats.add(function(actor, api)
 		if actor:buff_count(debuffRexBreak) > 0 then
 			api.armor_add(-4 * actor:buff_count(debuffRexBreak))
@@ -229,14 +237,12 @@ local function initialize()
 
 	Callback.add(objSyringe.on_create, function(inst)
 		inst.speed = SHOOT1_SPEED
-		local data = Instance.get_data(inst)
-		data.lifetime = SHOOT1_LIFETIME
+		inst.lifetime = SHOOT1_LIFETIME
 	end)
 
   	Callback.add(objSyringe.on_step, function(inst)
-		local data = Instance.get_data(inst)
-		data.lifetime = data.lifetime - 1
-		if data.lifetime < 0 then
+		inst.lifetime = inst.lifetime - 1
+		if inst.lifetime < 0 then
 			inst:destroy()
 		end
 
@@ -262,14 +268,12 @@ local function initialize()
 
 	Callback.add(objSyringeBreak.on_create, function(inst)
 		inst.speed = SHOOT1_SPEED
-		local data = Instance.get_data(inst)
-		data.lifetime = SHOOT1_LIFETIME
+		inst.lifetime = SHOOT1_LIFETIME
 	end)
 
   	Callback.add(objSyringeBreak.on_step, function(inst)
-		local data = Instance.get_data(inst)
-		data.lifetime = data.lifetime - 1
-		if data.lifetime < 0 then
+		inst.lifetime = inst.lifetime - 1
+		if inst.lifetime < 0 then
 			inst:destroy()
 		end
 
@@ -290,7 +294,7 @@ local function initialize()
 		end
 	end)
 
-	-- PRIMARY: INJECT
+	-- Primary: INJECT
 	local statePrimary = ActorState.new("rexPrimary")
 	primary.sprite = sprite_skills
 	primary.subimage = 0
@@ -370,21 +374,17 @@ local function initialize()
 	local objPreview = Object.new("rexMortarPreview")
 
 	Callback.add(objMortar.on_create, function(inst)
-		local data = Instance.get_data(inst)
-		data.lifetime_max = SHOOT2_DELAY
-		data.lifetime = SHOOT2_DELAY
+		inst.lifetime_max = SHOOT2_DELAY
+		inst.lifetime = SHOOT2_DELAY
 	end)
 
 	Callback.add(objMortar.on_step, function(inst)
 		local data = Instance.get_data(inst)
 
-		if data.lifetime > 0 then
-			data.lifetime = data.lifetime - 1
-		end
-
-		if data.lifetime <= 0 then
+		inst.lifetime = inst.lifetime - 1
+		if inst.lifetime <= 0 then
 			for i=0, inst.parent:buff_count(buff_mirror) do
-				local hit = inst.parent:fire_explosion(inst.x + (i * 20), inst.y, 150, 150, secondary.damage, gm.constants.sEfSuperMissileExplosion, gm.constants.sSparks12).attack_info
+				local hit = inst.parent:fire_explosion(inst.x + (i * 20), inst.y, SHOOT2_RADIUS*2, SHOOT2_RADIUS*2, secondary.damage, gm.constants.sEfSuperMissileExplosion, gm.constants.sSparks12).attack_info
 				hit.climb = i * 8 * 1.35
 				gm.sound_play_at(sound2_impact.value, 0.5, 0.9 + math.random() * 0.2, inst.x, inst.y)
 			end
@@ -395,10 +395,8 @@ local function initialize()
 
 	-- indicator for mortar
 	Callback.add(objMortar.on_draw, function(inst)
-		local data = Instance.get_data(inst)
-
-		local t = 1 - data.lifetime / data.lifetime_max
-		local radius = (1 - math.exp(-5 * t)) * 75
+		local t = 1 - inst.lifetime / inst.lifetime_max
+		local radius = (1 - math.exp(-5 * t)) * SHOOT2_RADIUS
 		
 		gm.draw_circle(inst.x, inst.y, radius, true)
 	end)
@@ -406,8 +404,6 @@ local function initialize()
 	
 	Callback.add(objPreview.on_draw, function(inst)
 		local actor = inst.parent
-
-		-- need 2 make this work on enemies
 		if actor:get_active_skill(1).skill_id == secondary.value then
 			if actor.aiming == 1 then
 				local target = find_horizontal_enemy(actor)
@@ -416,7 +412,7 @@ local function initialize()
 					inst.y = target.y
 				else
 					inst.x = actor.x + 250 * actor.image_xscale
-					inst.y = actor.y + 10
+					inst.y = actor.y - 5
 				end
 
 				gm.draw_set_colour(Color.from_hsv(0, 0, 100))
@@ -424,7 +420,7 @@ local function initialize()
 				for offset = 0, 15 * 35, 35 do
 					gm.draw_line_width(inst.x, inst.y - offset, inst.x, inst.y - offset - 20, 1)
 				end
-				gm.draw_circle(inst.x, inst.y, 75, true)
+				gm.draw_circle(inst.x, inst.y, SHOOT2_RADIUS, true)
 			else
 				inst:destroy()
 			end
@@ -432,7 +428,7 @@ local function initialize()
 	end)
 
 	secondary.sprite = sprite_skills
-	secondary.subimage = 2
+	secondary.subimage = 1
 	secondary.cooldown = SHOOT2_COOLDOWN
 	secondary.damage = SHOOT2_DAMAGE
 	secondary.does_change_activity_state = true
@@ -459,10 +455,7 @@ local function initialize()
 
 		local preview = objPreview:create(actor.x, actor.y)
 		preview.parent = actor
-	end)	
-
-	-- Callback.add(statePrimaryCharge.on_exit, function(actor, data)
-	-- end)
+	end)
 
 	Callback.add(stateSecondary.on_step, function(actor, data)
 		actor.sprite_index2 = sprite_shoot_2_aim
@@ -502,7 +495,7 @@ local function initialize()
 				spawn_y = target.y
 			else
 				spawn_x = actor.x + 250 * actor.image_xscale
-				spawn_y = actor.y + 10
+				spawn_y = actor.y - 5
 			end
 
 			local oMortar = objMortar:create(spawn_x, spawn_y)
@@ -519,10 +512,172 @@ local function initialize()
 		actor:skill_util_strafe_exit()
 	end)
 
-	-- UTILITY: DISPERSE
+
+	--
+	-- Secondary2: SATURATE
+	local objBarrage = Object.new("rexBarrage")
+	local objPreview2 = Object.new("rexBarragePreview")
+
+	Callback.add(objBarrage.on_create, function(inst)
+		inst.lifetime_max = SHOOT2B_DELAY + SHOOT2B_LIFETIME
+		inst.lifetime = SHOOT2B_DELAY + SHOOT2B_LIFETIME
+		inst.age = SHOOT2B_DELAY
+
+		local data = Instance.get_data(inst)
+		data.boom_timer = 0
+	end)
+
+	Callback.add(objBarrage.on_step, function(inst)
+		local data = Instance.get_data(inst)
+
+		-- I HATE DOING MATH!!!!!!!!!!!!!!!!!!!!!!!!
+		inst.age = inst.age - 1
+		inst.lifetime = inst.lifetime - 1
+		if inst.lifetime <= SHOOT2B_LIFETIME then
+			data.boom_timer = data.boom_timer + 1
+
+			if data.boom_timer >= SHOOT2B_LIFETIME / SHOOT2B_BOMBS then
+				data.boom_timer = 0
+
+				local x_offset = gm.random_range(-60, 60)
+				local y_offset = gm.random_range(-20, 20)
+
+				for i=0, inst.parent:buff_count(buff_mirror) do
+					local hit = inst.parent:fire_explosion(inst.x + x_offset + (i * 20), inst.y + y_offset, 100, 100, secondary2.damage, gm.constants.sEfSuperMissileExplosion, gm.constants.sSparks12).attack_info
+					hit.climb = i * 8 * 1.35
+					hit.stun = 1
+				gm.sound_play_at(sound2_impact.value, 0.5, 0.9 + math.random() * 0.2, inst.x, inst.y)
+				end
+			end
+		end
+
+		if inst.lifetime <= 0 then
+			inst:destroy()
+		end
+	end)
+
+	Callback.add(objBarrage.on_draw, function(inst)
+		local data = Instance.get_data(inst)
+
+		if inst.lifetime >= SHOOT2B_LIFETIME then
+			local t = 1 - (inst.age / SHOOT2B_DELAY)
+			radius = (1 - math.exp(-5 * t)) * SHOOT2B_RADIUS
+		else
+			radius = SHOOT2B_RADIUS
+		end
+
+		gm.draw_circle(inst.x, inst.y, radius, true)
+	end)
+
+	Callback.add(objPreview2.on_draw, function(inst)
+		local actor = inst.parent
+		if actor:get_active_skill(1).skill_id == secondary2.value then
+			if actor.aiming == 1 then
+				local target = find_horizontal_enemy(actor)
+				if target then
+					inst.x = target.x
+					inst.y = target.y
+				else
+					inst.x = actor.x + 250 * actor.image_xscale
+					inst.y = actor.y - 5
+				end
+
+				gm.draw_set_colour(Color.from_hsv(0, 0, 100))
+
+				for offset = 0, 15 * 35, 35 do
+					gm.draw_line_width(inst.x, inst.y - offset, inst.x, inst.y - offset - 20, 1)
+				end
+				gm.draw_circle(inst.x, inst.y, SHOOT2B_RADIUS, true)
+			else
+				inst:destroy()
+			end
+		end
+	end)
+
+	local stateSecondary2 = ActorState.new("rexSecondary2Aim")
+	local stateSecondary2Fire = ActorState.new("rexSecondary2Shoot")
+	secondary2.sprite = sprite_skills
+	secondary2.subimage = 5
+	secondary2.cooldown = 6 * 60
+	secondary2.damage = SHOOT2B_DAMAGE
+
+	Callback.add(secondary2.on_activate, function(actor)
+		actor:set_state(stateSecondary2)
+	end)
+
+	Callback.add(stateSecondary2.on_enter, function(actor, data)
+		actor.image_index2 = 0
+		actor:skill_util_strafe_init()
+		actor.aiming = 1
+
+		if gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) ~= 0 then
+			actor.hold_facing_direction_xscale = gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) -- stupid dumb idiotic bullshit fuckery, apparently vanilla code also uses that lmao
+		else
+			actor.hold_facing_direction_xscale = actor.image_xscale
+		end
+
+		local preview = objPreview2:create(actor.x, actor.y)
+		preview.parent = actor
+	end)
+
+	Callback.add(stateSecondary2.on_step, function(actor, data)
+		actor.sprite_index2 = sprite_shoot_2_aim
+		local second = ActorSkill.wrap(actor:get_active_skill(1))
+		second:freeze_cooldown()
+
+		actor:skill_util_step_strafe_sprites()
+
+		-- if not holding down secondary: exit state
+		if not Util.bool(actor.x_skill) then
+			actor.aiming = 0
+			actor:set_state(stateSecondary2Fire)
+		end
+	end)
+
+	Callback.add(stateSecondary2Fire.on_enter, function(actor, data)
+		data.fired = 0
+		actor.image_index2 = 0
+
+		actor:skill_util_strafe_init()
+	end)
+
+	Callback.add(stateSecondary2Fire.on_step, function(actor, data) 
+		actor.sprite_index2 = sprite_shoot_2
+		actor:skill_util_strafe_update(0.25 * actor.attack_speed, 0.5)
+		actor:skill_util_step_strafe_sprites()
+
+		if data.fired == 0 then
+			local target = find_horizontal_enemy(actor)
+
+			local spawn_x, spawn_y
+
+			if target then
+				spawn_x = target.x
+				spawn_y = target.y
+			else
+				spawn_x = actor.x + 250 * actor.image_xscale
+				spawn_y = actor.y - 5
+			end
+
+			local oBarrage = objBarrage:create(spawn_x, spawn_y)
+			oBarrage.parent = actor
+
+			actor:sound_play(sound2_launch.value, 0.5, 0.9 + math.random() * 0.1)
+
+			data.fired = 1
+		end
+		actor:skill_util_exit_state_on_anim_end()
+	end)
+
+	Callback.add(stateSecondary2Fire.on_exit, function(actor, data)
+		actor:skill_util_strafe_exit()
+	end)
+
+
+	-- Utility: DISPERSE
 	local stateUtility = ActorState.new("rexUtility")
 	utility.sprite = sprite_skills
-	utility.subimage = 3
+	utility.subimage = 2
 	utility.cooldown = 6 * 60
 	utility.damage = SHOOT3_DAMAGE
 	utility.is_primary = false
@@ -573,7 +728,7 @@ local function initialize()
 		end
 	end)
 
-	-- SPECIAL: Tangling Growth
+	-- Special: Tangling Growth
 	local debuffRexRoot = Buff.new("rexRoot")
 	debuffRexRoot.show_icon = false
 	debuffRexRoot.is_timed = true
@@ -700,8 +855,8 @@ local function initialize()
 					for i=0, inst.parent:buff_count(buff_mirror) do
 						local hit = parent:fire_direct(target, special.damage, dir, inst.x, inst.y, nil).attack_info
 						hit.climb = i * 8 * 1.35
+						hit.__rex_info = ATTACK_TAG_GROWTH
 					end
-					hit.__rex_info = ATTACK_TAG_GROWTH
 					
 					local objPull = objFlowerPull:create(inst.x, inst.y)
 					objPull.parent = parent
@@ -725,7 +880,7 @@ local function initialize()
 
 	local stateSpecial = ActorState.new("rexSpecial")
 	special.sprite = sprite_skills
-	special.subimage = 4
+	special.subimage = 3
 	special.cooldown = 14 * 60
 	special.damage = SHOOT4_DAMAGE
 	
