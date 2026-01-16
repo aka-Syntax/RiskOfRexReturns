@@ -13,6 +13,10 @@ local SOUND_PATH = path.combine(PATH, "Sounds")
 
 -- ========== Main ==========
 
+-- lower damage stat?
+-- make m2 cancelable into itself
+-- nerf growth again (LOL)
+
 local function initialize()
   local rex = Survivor.new("rex")
 	-- how the hell do i put this guy inbetween merc and laoder
@@ -129,7 +133,7 @@ local function initialize()
 	local SHOOT2_DAMAGE = 3.5
 	local SHOOT2_DELAY = 0.5 * 60
 	local SHOOT2_COOLDOWN = 0.8 * 60
-	local SHOOT2_RADIUS = 75
+	local SHOOT2_RADIUS = 60
 
 	local SHOOT3_DAMAGE = 0.5
 	local SHOOT3_KNOCKBACK = 6.5
@@ -137,12 +141,12 @@ local function initialize()
 	local SHOOT3_LIFESTEAL = 0.75
 	local WEAKEN_DEBUFF_DURATION = 3 * 60
 
-	local SHOOT4_DAMAGE = 1.5
+	local SHOOT4_DAMAGE = 0.5
 	local SHOOT4_TICK_TIME = 90
 	local SHOOT4_PULSES = 8
 	local SHOOT4_RADIUS = 160
 	local SHOOT4_PULL_LIFETIME = 0.2 * 60
-	local SHOOT4_LIFESTEAL = 0.15
+	local SHOOT4_LIFESTEAL = 0.25
 
 	local SHOOT2B_DAMAGE = 2.0
 	local SHOOT2B_LIFETIME = 2 * 60
@@ -411,7 +415,7 @@ local function initialize()
 					inst.x = target.x
 					inst.y = target.y
 				else
-					inst.x = actor.x + 250 * actor.image_xscale
+					inst.x = actor.x + 150 * actor.image_xscale
 					inst.y = actor.y - 5
 				end
 
@@ -434,6 +438,7 @@ local function initialize()
 	secondary.does_change_activity_state = true
 	secondary.hold_facing_direction = true
 	secondary.override_strafe_direction = true
+	secondary.required_interrupt_priority = ActorState.InterruptPriority.ANY
 
 	local stateSecondary = ActorState.new("rexSecondaryAim")
 	local stateSecondaryFire = ActorState.new("rexSecondaryShoot")
@@ -494,7 +499,7 @@ local function initialize()
 				spawn_x = target.x
 				spawn_y = target.y
 			else
-				spawn_x = actor.x + 250 * actor.image_xscale
+				spawn_x = actor.x + 150 * actor.image_xscale
 				spawn_y = actor.y - 5
 			end
 
@@ -512,6 +517,11 @@ local function initialize()
 		actor:skill_util_strafe_exit()
 	end)
 
+	Callback.add(stateSecondaryFire.on_get_interrupt_priority, function(actor, data)
+		if actor.image_index2 >= 1 then
+			return ActorState.InterruptPriority.ANY
+		end
+	end)
 
 	--
 	-- Secondary2: SATURATE
@@ -600,6 +610,7 @@ local function initialize()
 	secondary2.subimage = 5
 	secondary2.cooldown = 6 * 60
 	secondary2.damage = SHOOT2B_DAMAGE
+	secondary2.required_interrupt_priority = ActorState.InterruptPriority.ANY
 
 	Callback.add(secondary2.on_activate, function(actor)
 		actor:set_state(stateSecondary2)
@@ -673,6 +684,12 @@ local function initialize()
 		actor:skill_util_strafe_exit()
 	end)
 
+	Callback.add(stateSecondary2Fire.on_get_interrupt_priority, function(actor, data)
+		if actor.image_index2 >= 1 then
+			return ActorState.InterruptPriority.ANY
+		end
+	end)
+
 
 	-- Utility: DISPERSE
 	local stateUtility = ActorState.new("rexUtility")
@@ -682,7 +699,6 @@ local function initialize()
 	utility.damage = SHOOT3_DAMAGE
 	utility.is_primary = false
 	utility.is_utility = true
-	utility.required_interrupt_priority = ActorState.InterruptPriority.SKILL_INTERRUPT_PERIOD
 
 	Callback.add(utility.on_activate, function(actor, skill, slot)
 		actor:set_state(stateUtility)
@@ -756,7 +772,7 @@ local function initialize()
 			if inst.parent:attack_collision_canhit(target) and not target:is_climbing() and not target.intangible then
 				local t = 1 - inst.lifetime / SHOOT4_PULL_LIFETIME
 				local falloff = (1 - t)^2
-				local strength = math.max(0.1, 3 * falloff)	
+				local strength = math.max(0.1, 10 * falloff)
 					
 				if GM.actor_is_classic(target) then -- classic enemies (Eg. NOT Jellyfish or Archer Bugs) are pulled horizontally to the center of the pull
 					target:move_contact_solid(180 + Math.direction(inst.x, target.y, target.x, target.y), strength)
@@ -857,12 +873,14 @@ local function initialize()
 						hit.climb = i * 8 * 1.35
 						hit.__rex_info = ATTACK_TAG_GROWTH
 					end
-					
-					local objPull = objFlowerPull:create(inst.x, inst.y)
-					objPull.parent = parent
-					objPull.team = inst.team
+				
 				end
 			end
+
+			local objPull = objFlowerPull:create(inst.x, inst.y)
+			objPull.parent = parent
+			objPull.team = inst.team
+
 			gm.sound_play_at(sound4_pull.value, 0.5, 0.8 + math.random() * 0.1, inst.x, inst.y)
 
 			if data.pulses_left <= 0 then
