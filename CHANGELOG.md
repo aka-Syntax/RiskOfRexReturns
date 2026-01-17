@@ -5,6 +5,10 @@
 * Growth lifesteal 25% -> 20%
 * DISPERSE lifesteal 60% -> 50%
 
+* Mortar no longer fires twice in a single skill use when held down for long enough with multiple skill charges
+
+*Thanks to ANXvariable for the assist.*
+
 `v1.0.3`
 * Mortar radius reduced from 75 to 60
 * Growth damage reduced from 150% to 50%

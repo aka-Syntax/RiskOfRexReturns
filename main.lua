@@ -127,7 +127,7 @@ local function initialize()
 	rex:add_skill(Skill.Slot.SECONDARY, secondary2)
 
 	-- magic number bullshit
-	local SHOOT1_DAMAGE = 0.35
+	local SHOOT1_DAMAGE = 0.3
 	local SHOOT1_SPEED = 20
 	local SHOOT1_LIFETIME = 2 * 60
 	local SHOOT1_LIFESTEAL = 0.3
@@ -150,6 +150,13 @@ local function initialize()
 	local SHOOT4_RADIUS = 160
 	local SHOOT4_PULL_LIFETIME = 0.2 * 60
 	local SHOOT4_LIFESTEAL = 0.15
+
+	local SHOOT4S_DAMAGE = 0.5
+	local SHOOT4S_TICK_TIME = 90
+	local SHOOT4S_PULSES = 8
+	local SHOOT4S_RADIUS = 160
+	local SHOOT4S_PULL_LIFETIME = 0.2 * 60
+	local SHOOT4S_LIFESTEAL = 0.15
 
 	local SHOOT2B_DAMAGE = 2.0
 	local SHOOT2B_LIFETIME = 2 * 60
@@ -404,7 +411,7 @@ local function initialize()
 	Callback.add(objMortar.on_draw, function(inst)
 		local t = 1 - inst.lifetime / inst.lifetime_max
 		local radius = (1 - math.exp(-5 * t)) * SHOOT2_RADIUS
-		
+		gm.draw_set_colour(Color.from_hsv(0, 0, 100))
 		gm.draw_circle(inst.x, inst.y, radius, true)
 	end)
 
@@ -427,6 +434,7 @@ local function initialize()
 				for offset = 0, 15 * 35, 35 do
 					gm.draw_line_width(inst.x, inst.y - offset, inst.x, inst.y - offset - 20, 1)
 				end
+
 				gm.draw_circle(inst.x, inst.y, SHOOT2_RADIUS, true)
 			else
 				inst:destroy()
@@ -439,6 +447,7 @@ local function initialize()
 	secondary.cooldown = SHOOT2_COOLDOWN
 	secondary.damage = SHOOT2_DAMAGE
 	secondary.does_change_activity_state = true
+	secondary.require_key_press = true
 	secondary.hold_facing_direction = true
 	secondary.override_strafe_direction = true
 	secondary.required_interrupt_priority = ActorState.InterruptPriority.ANY
@@ -473,16 +482,19 @@ local function initialize()
 		actor:skill_util_step_strafe_sprites()
 
 		-- if not holding down secondary: exit state
-		if not Util.bool(actor.x_skill) then
+		if not actor:control("skill2", 0) then
 			actor.aiming = 0
 			actor:set_state(stateSecondaryFire)
 		end
 	end)
 
-	Callback.add(stateSecondaryFire.on_enter, function(actor, data)
-		data.fired = 0
-		actor.image_index2 = 0
+	Callback.add(stateSecondary.on_exit, function(actor, data)
+		actor:skill_util_strafe_exit()
+	end)
 
+	Callback.add(stateSecondaryFire.on_enter, function(actor, data)
+		actor.fired = 0
+		actor.image_index2 = 0
 		actor:skill_util_strafe_init()
 	end)
 
@@ -491,7 +503,7 @@ local function initialize()
 		actor:skill_util_strafe_update(0.25 * actor.attack_speed, 0.5)
 		actor:skill_util_step_strafe_sprites()
 
-		if data.fired == 0 then
+		if actor.fired == 0 then
 			rex_inst_damage(actor, 0.12)
 
 			local target = find_horizontal_enemy(actor)
@@ -511,7 +523,7 @@ local function initialize()
 
 			actor:sound_play(sound2_launch.value, 0.5, 0.9 + math.random() * 0.1)
 
-			data.fired = 1
+			actor.fired = 1
 		end
 		actor:skill_util_exit_state_on_anim_end()
 	end)
@@ -579,7 +591,7 @@ local function initialize()
 		else
 			radius = SHOOT2B_RADIUS
 		end
-
+		gm.draw_set_colour(Color.from_hsv(0, 0, 100))
 		gm.draw_circle(inst.x, inst.y, radius, true)
 	end)
 
@@ -652,8 +664,6 @@ local function initialize()
 	Callback.add(stateSecondary2Fire.on_enter, function(actor, data)
 		data.fired = 0
 		actor.image_index2 = 0
-
-		actor:skill_util_strafe_init()
 	end)
 
 	Callback.add(stateSecondary2Fire.on_step, function(actor, data) 
