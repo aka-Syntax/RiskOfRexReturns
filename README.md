@@ -10,13 +10,11 @@ Adds REX from Risk of Rain 2 as a playable character.
 If you would like to shower me with unending praise and adulation (or contact me about this mod for any other reason), you can do so using @aka_syntax in the [Risk of Rain Returns Modding](https://discord.gg/VjS57cszMq) server.
 
 ## What's Left
-- Alternate skills & Scepter upgrade
-- Redoing sprites and adding missing animations
-- Skins
-- Online compabitility
+- Alt. skills & unlocks
+- Redoing old sprites & adding missing animations
+- Online compatibility
 - Logbook entry
-
----
+- and probably tons of number fine-tuning
 
 ## Credits
 - Starstorm Returns team: For allowing referencing of their code and generally being helpful

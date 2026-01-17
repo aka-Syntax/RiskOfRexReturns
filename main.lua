@@ -17,13 +17,16 @@ local function initialize()
   local rex = Survivor.new("rex")
 	-- how the hell do i put this guy inbetween merc and laoder
 
+	-- Make DISPERSE charge-able
+	-- Add scepter upgrade
+
 	-- Sprites
 	local sprite_select = 				Sprite.new("rexSelect", path.combine(SPRITE_PATH, "select.png"), 23, 56, 0)
 	local sprite_skills =				Sprite.new("RexSkills", path.combine(SPRITE_PATH, "skills.png"), 6)
 	local sprite_portrait =				Sprite.new("RexPortrait", path.combine(SPRITE_PATH, "portrait.png"), 3)
 	local sprite_portrait_small =		Sprite.new("RexPortraitSmall", path.combine(SPRITE_PATH, "portraitSmall.png"))
 	local sprite_palette = 				Sprite.new("RexPalette", path.combine(SPRITE_PATH, "palette.png"))
-	local sprite_credits = 				Sprite.new("RexCredits", path.combine(SPRITE_PATH, "credits.png"))
+	local sprite_credits = 				Sprite.new("RexCredits", path.combine(SPRITE_PATH, "credits.png"), 1, 6, 0)
 
 	local sprite_idle = 				Sprite.new("RexIdle", path.combine(SPRITE_PATH, "idle.png"), 1, 20, 36)
 	local sprite_idle_half = 			Sprite.new("RexIdleHalf", path.combine(SPRITE_PATH, "idleHalf.png"), 1, 20, 36)
@@ -39,8 +42,6 @@ local function initialize()
 	-- sprite_climb:set_speed(2.5) -- why does this not work vro
 
 	local sprite_shoot_1 = 				Sprite.new("RexShoot1", path.combine(SPRITE_PATH, "shoot1.png"), 10, 17, 36)
-	-- local sprite_shoot_2_aim = 			Sprite.new("RexShoot2Aim", path.combine(SPRITE_PATH, "shoot2aiml.png"), 1, 25, 59)
-	-- local sprite_shoot_2 = 				Sprite.new("RexShoot2", path.combine(SPRITE_PATH, "shoot2real.png"), 5, 25, 59)
 	local sprite_shoot_2 = 				Sprite.new("RexShoot2", path.combine(SPRITE_PATH, "shoot2.png"), 6, 25, 59)
 	local sprite_shoot_3 = 				Sprite.new("RexShoot3", path.combine(SPRITE_PATH, "shoot3.png"), 6, 24, 36)
 
@@ -73,14 +74,14 @@ local function initialize()
 
 	rex:set_stats_base({
 		health = 120,
-		damage = 11,
+		damage = 10,
 		regen = 0.05
 	})
 
 	rex:set_stats_level({
 		health = 44,
-		damage = 2.75,
-		regen = 0.01,
+		damage = 2.8,
+		regen = 0.015,
 		armor = 3
 	})
 
@@ -122,16 +123,16 @@ local function initialize()
 	local secondary = rex:get_skills(Skill.Slot.SECONDARY)[1]
 	local utility = rex:get_skills(Skill.Slot.UTILITY)[1]
 	local special = rex:get_skills(Skill.Slot.SPECIAL)[1]
-	-- local specialUpgrade = Skill.new("rexVUpgrade")
+	local specialUpgrade = Skill.new("rexVUpgrade")
 
 	local secondary2 = Skill.new("rexX2")
 	rex:add_skill(Skill.Slot.SECONDARY, secondary2)
 
 	-- magic number bullshit
-	local SHOOT1_DAMAGE = 0.30
+	local SHOOT1_DAMAGE = 0.3
 	local SHOOT1_SPEED = 20
 	local SHOOT1_LIFETIME = 2 * 60
-	local SHOOT1_LIFESTEAL = 0.3
+	local SHOOT1_LIFESTEAL = 0.4
 	local BREAK_DEBUFF_DURATION = 4 * 60
 
 	local SHOOT2_DAMAGE = 3
@@ -140,9 +141,9 @@ local function initialize()
 	local SHOOT2_RADIUS = 60
 
 	local SHOOT3_DAMAGE = 0.3
-	local SHOOT3_KNOCKBACK = 6.5
+	local SHOOT3_KNOCKBACK = 8
 	local SHOOT3_RECOIL = 3.5
-	local SHOOT3_LIFESTEAL = 0.5
+	local SHOOT3_LIFESTEAL = 0.6
 	local WEAKEN_DEBUFF_DURATION = 3 * 60
 
 	local SHOOT4_DAMAGE = 0.5
@@ -150,7 +151,7 @@ local function initialize()
 	local SHOOT4_PULSES = 8
 	local SHOOT4_RADIUS = 160
 	local SHOOT4_PULL_LIFETIME = 0.2 * 60
-	local SHOOT4_LIFESTEAL = 0.15
+	local SHOOT4_LIFESTEAL = 0.2
 
 	local SHOOT4S_DAMAGE = 0.5
 	local SHOOT4S_TICK_TIME = 90
@@ -632,6 +633,7 @@ local function initialize()
 		actor.image_index2 = 0
 		actor:skill_util_strafe_init()
 		actor.aiming = 1
+		actor.firing = 0
 
 		if gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) ~= 0 then
 			actor.hold_facing_direction_xscale = gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) -- stupid dumb idiotic bullshit fuckery, apparently vanilla code also uses that lmao
@@ -645,29 +647,24 @@ local function initialize()
 
 	Callback.add(stateSecondary2.on_step, function(actor, data)
 		actor.sprite_index2 = sprite_shoot_2_aim
-		local second = ActorSkill.wrap(actor:get_active_skill(1))
-		second:freeze_cooldown()
 
-		actor:skill_util_step_strafe_sprites()
+		if actor.aiming == 1 then
+			local second = ActorSkill.wrap(actor:get_active_skill(1))
+			second:freeze_cooldown()
 
-		-- if not holding down secondary: exit state
-		if not Util.bool(actor.x_skill) then
-			actor.aiming = 0
-			actor:set_state(stateSecondary2Fire)
+			actor:skill_util_step_strafe_sprites()
+
+			-- if not holding down secondary: exit state
+			if not Util.bool(actor.x_skill) then
+				actor.aiming = 0
+			end
 		end
-	end)
 
-	Callback.add(stateSecondary2Fire.on_enter, function(actor, data)
-		data.fired = 0
-		actor.image_index2 = 0
-	end)
-
-	Callback.add(stateSecondary2Fire.on_step, function(actor, data) 
 		actor.sprite_index2 = sprite_shoot_2
 		actor:skill_util_strafe_update(0.25 * actor.attack_speed, 0.5)
 		actor:skill_util_step_strafe_sprites()
 
-		if data.fired == 0 then
+		if data.fired == 0 and actor.image_index2 >= 1 then
 			local target = find_horizontal_enemy(actor)
 
 			local spawn_x, spawn_y
@@ -690,11 +687,11 @@ local function initialize()
 		actor:skill_util_exit_state_on_anim_end()
 	end)
 
-	Callback.add(stateSecondary2Fire.on_exit, function(actor, data)
+	Callback.add(stateSecondary2.on_exit, function(actor, data)
 		actor:skill_util_strafe_exit()
 	end)
 
-	Callback.add(stateSecondary2Fire.on_get_interrupt_priority, function(actor, data)
+	Callback.add(stateSecondary2.on_get_interrupt_priority, function(actor, data)
 		if actor.image_index2 >= 1 then
 			return ActorState.InterruptPriority.ANY
 		end
@@ -712,7 +709,7 @@ local function initialize()
 	utility.damage = SHOOT3_DAMAGE
 	utility.is_primary = false
 	utility.is_utility = true
-	utility.disable_aim_stall = true
+	utility.disable_aim_stall = true -- allows for wavedashing
 
 	Callback.add(utility.on_activate, function(actor, skill, slot)
 		actor:set_state(stateUtility)

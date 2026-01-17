@@ -1,13 +1,18 @@
 `v1.0.4`
-* Damage reduced from 12+3 to 11+2.8
-* INJECT debuff: -4, 6s -> -3, 4s
+* Damage: 12+3 -> 10+2.8
+* Regeneration reduced: 0.6+0.1 -> 0.5+0.15
+* INJECT armor debuff -4, 6s -> -3, 4s
+* INJECT lifesteal 30% -> 40%
 * Mortar damage 350% -> 300%
 * Growth lifesteal 25% -> 20%
-* DISPERSE lifesteal 60% -> 50%
 
-* Mortar no longer fires twice in a single skill use when held down for long enough with multiple skill charges
+- Mortar no longer fires twice in a single skill use when held down for long enough with multiple skill charges
 
 *Thanks to ANXvariable for the assist.*
+
+* Mortar no longer causes rendering issues with certain VFX
+
+*For once I actually played a run to test this. REX should no longer cause any abrupt screen flashing or game crashes (sorry).*
 
 `v1.0.3`
 * Mortar radius reduced from 75 to 60
