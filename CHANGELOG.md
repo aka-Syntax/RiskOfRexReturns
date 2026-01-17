@@ -1,3 +1,10 @@
+`v1.0.4`
+* Damage reduced from 12+3 to 11+2.8
+* INJECT debuff: -4, 6s -> -3, 4s
+* Mortar damage 350% -> 300%
+* Growth lifesteal 25% -> 20%
+* DISPERSE lifesteal 60% -> 50%
+
 `v1.0.3`
 * Mortar radius reduced from 75 to 60
 * Growth damage reduced from 150% to 50%

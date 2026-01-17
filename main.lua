@@ -22,6 +22,7 @@ local function initialize()
 	local sprite_skills =				Sprite.new("RexSkills", path.combine(SPRITE_PATH, "skills.png"), 6)
 	local sprite_portrait =				Sprite.new("RexPortrait", path.combine(SPRITE_PATH, "portrait.png"), 3)
 	local sprite_portrait_small =		Sprite.new("RexPortraitSmall", path.combine(SPRITE_PATH, "portraitSmall.png"))
+	local sprite_palette = 				Sprite.new("RexPalette", path.combine(SPRITE_PATH, "palette.png"))
 	local sprite_credits = 				Sprite.new("RexCredits", path.combine(SPRITE_PATH, "credits.png"))
 
 	local sprite_idle = 				Sprite.new("RexIdle", path.combine(SPRITE_PATH, "idle.png"), 1, 20, 36)
@@ -71,14 +72,14 @@ local function initialize()
 
 	rex:set_stats_base({
 		health = 120,
-		damage = 12,
-		regen = 0.06
+		damage = 11,
+		regen = 0.05
 	})
 
 	rex:set_stats_level({
 		health = 44,
-		damage = 3,
-		regen = 0.014,
+		damage = 2.75,
+		regen = 0.01,
 		armor = 3
 	})
 
@@ -89,6 +90,10 @@ local function initialize()
 	rex.sprite_idle = sprite_idle
 	rex.sprite_title = sprite_walk
 	rex.sprite_credits = sprite_credits
+
+	rex.sprite_palette = sprite_palette
+	rex.sprite_portrait_palette = sprite_palette
+	rex.sprite_loadout_palette = sprite_palette
 
 	rex.primary_color = Color.from_rgb(151, 177, 95)
 	-- rex.select_sound_id = sound_select
@@ -126,17 +131,17 @@ local function initialize()
 	local SHOOT1_SPEED = 20
 	local SHOOT1_LIFETIME = 2 * 60
 	local SHOOT1_LIFESTEAL = 0.3
-	local BREAK_DEBUFF_DURATION = 6 * 60
+	local BREAK_DEBUFF_DURATION = 4 * 60
 
-	local SHOOT2_DAMAGE = 3.5
+	local SHOOT2_DAMAGE = 3
 	local SHOOT2_DELAY = 0.5 * 60
 	local SHOOT2_COOLDOWN = 0.8 * 60
 	local SHOOT2_RADIUS = 60
 
-	local SHOOT3_DAMAGE = 0.5
+	local SHOOT3_DAMAGE = 0.3
 	local SHOOT3_KNOCKBACK = 6.5
 	local SHOOT3_RECOIL = 3.5
-	local SHOOT3_LIFESTEAL = 0.75
+	local SHOOT3_LIFESTEAL = 0.5
 	local WEAKEN_DEBUFF_DURATION = 3 * 60
 
 	local SHOOT4_DAMAGE = 0.5
@@ -144,7 +149,7 @@ local function initialize()
 	local SHOOT4_PULSES = 8
 	local SHOOT4_RADIUS = 160
 	local SHOOT4_PULL_LIFETIME = 0.2 * 60
-	local SHOOT4_LIFESTEAL = 0.25
+	local SHOOT4_LIFESTEAL = 0.15
 
 	local SHOOT2B_DAMAGE = 2.0
 	local SHOOT2B_LIFETIME = 2 * 60
@@ -213,7 +218,7 @@ local function initialize()
 
 	RecalculateStats.add(function(actor, api)
 		if actor:buff_count(debuffRexBreak) > 0 then
-			api.armor_add(-4 * actor:buff_count(debuffRexBreak))
+			api.armor_add(-3 * actor:buff_count(debuffRexBreak))
 		end
 	end)
 
