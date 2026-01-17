@@ -39,8 +39,9 @@ local function initialize()
 	-- sprite_climb:set_speed(2.5) -- why does this not work vro
 
 	local sprite_shoot_1 = 				Sprite.new("RexShoot1", path.combine(SPRITE_PATH, "shoot1.png"), 10, 17, 36)
-	local sprite_shoot_2_aim = 			Sprite.new("RexShoot2Aim", path.combine(SPRITE_PATH, "shoot2aiml.png"), 1, 25, 59)
-	local sprite_shoot_2 = 				Sprite.new("RexShoot2", path.combine(SPRITE_PATH, "shoot2real.png"), 5, 25, 59)
+	-- local sprite_shoot_2_aim = 			Sprite.new("RexShoot2Aim", path.combine(SPRITE_PATH, "shoot2aiml.png"), 1, 25, 59)
+	-- local sprite_shoot_2 = 				Sprite.new("RexShoot2", path.combine(SPRITE_PATH, "shoot2real.png"), 5, 25, 59)
+	local sprite_shoot_2 = 				Sprite.new("RexShoot2", path.combine(SPRITE_PATH, "shoot2.png"), 6, 25, 59)
 	local sprite_shoot_3 = 				Sprite.new("RexShoot3", path.combine(SPRITE_PATH, "shoot3.png"), 6, 24, 36)
 
 	local sprite_syringe = 				Sprite.new("RexSyringe", path.combine(SPRITE_PATH, "syringe.png"), 1, 13, 5)
@@ -127,7 +128,7 @@ local function initialize()
 	rex:add_skill(Skill.Slot.SECONDARY, secondary2)
 
 	-- magic number bullshit
-	local SHOOT1_DAMAGE = 0.3
+	local SHOOT1_DAMAGE = 0.30
 	local SHOOT1_SPEED = 20
 	local SHOOT1_LIFETIME = 2 * 60
 	local SHOOT1_LIFESTEAL = 0.3
@@ -452,8 +453,7 @@ local function initialize()
 	secondary.override_strafe_direction = true
 	secondary.required_interrupt_priority = ActorState.InterruptPriority.ANY
 
-	local stateSecondary = ActorState.new("rexSecondaryAim")
-	local stateSecondaryFire = ActorState.new("rexSecondaryShoot")
+	local stateSecondary = ActorState.new("rexSecondary")
 
 	Callback.add(secondary.on_activate, function(actor)
 		actor:set_state(stateSecondary)
@@ -462,7 +462,9 @@ local function initialize()
 	Callback.add(stateSecondary.on_enter, function(actor, data)
 		actor.image_index2 = 0
 		actor:skill_util_strafe_init()
+		
 		actor.aiming = 1
+		actor.fired = 0
 
 		if gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) ~= 0 then
 			actor.hold_facing_direction_xscale = gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) -- stupid dumb idiotic bullshit fuckery, apparently vanilla code also uses that lmao
@@ -475,35 +477,28 @@ local function initialize()
 	end)
 
 	Callback.add(stateSecondary.on_step, function(actor, data)
-		actor.sprite_index2 = sprite_shoot_2_aim
-		local second = ActorSkill.wrap(actor:get_active_skill(1))
-		second:freeze_cooldown()
-
-		actor:skill_util_step_strafe_sprites()
-
-		-- if not holding down secondary: exit state
-		if not actor:control("skill2", 0) then
-			actor.aiming = 0
-			actor:set_state(stateSecondaryFire)
-		end
-	end)
-
-	Callback.add(stateSecondary.on_exit, function(actor, data)
-		actor:skill_util_strafe_exit()
-	end)
-
-	Callback.add(stateSecondaryFire.on_enter, function(actor, data)
-		actor.fired = 0
-		actor.image_index2 = 0
-		actor:skill_util_strafe_init()
-	end)
-
-	Callback.add(stateSecondaryFire.on_step, function(actor, data) 
 		actor.sprite_index2 = sprite_shoot_2
+		
+		-- Aiming
+		if actor.aiming == 1 then
+			actor.image_index2 = 0
+			actor:skill_util_step_strafe_sprites()
+
+			local second = ActorSkill.wrap(actor:get_active_skill(1))
+			second:freeze_cooldown()
+
+			-- On secondary release: stop aiming
+			if not actor:control("skill2", 0) then
+				actor.aiming = 0
+				-- actor.image_index2 = 0
+			end
+		end
+
 		actor:skill_util_strafe_update(0.25 * actor.attack_speed, 0.5)
 		actor:skill_util_step_strafe_sprites()
 
-		if actor.fired == 0 then
+		-- Firing
+		if actor.fired == 0 and actor.image_index2 >= 1 then
 			rex_inst_damage(actor, 0.12)
 
 			local target = find_horizontal_enemy(actor)
@@ -528,11 +523,12 @@ local function initialize()
 		actor:skill_util_exit_state_on_anim_end()
 	end)
 
-	Callback.add(stateSecondaryFire.on_exit, function(actor, data)
+	Callback.add(stateSecondary.on_exit, function(actor, data)
 		actor:skill_util_strafe_exit()
+		-- actor.aiming = 0
 	end)
 
-	Callback.add(stateSecondaryFire.on_get_interrupt_priority, function(actor, data)
+	Callback.add(stateSecondary.on_get_interrupt_priority, function(actor, data)
 		if actor.image_index2 >= 1 then
 			return ActorState.InterruptPriority.ANY
 		end
