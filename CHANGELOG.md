@@ -1,4 +1,7 @@
 `v1.0.4`
+
+Next update is going to include charge-able DISPERSE and (finally) the Scepter upgrade. I wanted to push this update first because it fixes a really important bug.
+
 * Damage: 12+3 -> 10+2.8
 * Regeneration reduced: 0.6+0.1 -> 0.5+0.15
 * INJECT armor debuff -4, 6s -> -3, 4s
@@ -12,7 +15,7 @@
 
 * Mortar no longer causes rendering issues with certain VFX
 
-*For once I actually played a run to test this. REX should no longer cause any abrupt screen flashing or game crashes (sorry).*
+*For once I actually played a run to test this. REX should no longer cause any abrupt screen flashing or game crashes, sorry about that.*
 
 `v1.0.3`
 * Mortar radius reduced from 75 to 60
