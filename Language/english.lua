@@ -22,7 +22,7 @@ return {
 		},
 		rexVUpgrade = {
 			name = "Ravenous Growth",
-			description = "<r>Costs 24% current health</c>. Deploy a trap that <y>slows</c> and <b>pulls</c> nearby enemies in a msssive radius, dealing <y>8x80% damage</c> with <g>35% lifesteal.</c>."
+			description = "<r>Costs 24% current health</c>. Deploy a trap that <y>slows</c> and <b>pulls</c> nearby enemies in a massive radius, dealing <y>8x80% damage</c> with <g>35% lifesteal.</c>"
 		}
 	},
 

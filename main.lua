@@ -123,7 +123,7 @@ local function initialize()
 	local secondary = rex:get_skills(Skill.Slot.SECONDARY)[1]
 	local utility = rex:get_skills(Skill.Slot.UTILITY)[1]
 	local special = rex:get_skills(Skill.Slot.SPECIAL)[1]
-	local specialUpgrade = Skill.new("rexVUpgrade")
+	local specialS = Skill.new("rexVUpgrade")
 
 	local secondary2 = Skill.new("rexX2")
 	rex:add_skill(Skill.Slot.SECONDARY, secondary2)
@@ -135,7 +135,7 @@ local function initialize()
 	local SHOOT1_LIFESTEAL = 0.4
 	local BREAK_DEBUFF_DURATION = 4 * 60
 
-	local SHOOT2_DAMAGE = 3
+	local SHOOT2_DAMAGE = 2.7
 	local SHOOT2_DELAY = 0.5 * 60
 	local SHOOT2_COOLDOWN = 0.8 * 60
 	local SHOOT2_RADIUS = 60
@@ -149,16 +149,13 @@ local function initialize()
 	local SHOOT4_DAMAGE = 0.5
 	local SHOOT4_TICK_TIME = 90
 	local SHOOT4_PULSES = 8
-	local SHOOT4_RADIUS = 160
+	local SHOOT4_RADIUS = 180
 	local SHOOT4_PULL_LIFETIME = 0.2 * 60
 	local SHOOT4_LIFESTEAL = 0.2
 
-	local SHOOT4S_DAMAGE = 0.5
-	local SHOOT4S_TICK_TIME = 90
-	local SHOOT4S_PULSES = 8
-	local SHOOT4S_RADIUS = 160
-	local SHOOT4S_PULL_LIFETIME = 0.2 * 60
-	local SHOOT4S_LIFESTEAL = 0.15
+	local SHOOT4S_DAMAGE = 0.8
+	local SHOOT4S_RADIUS = 270
+	local SHOOT4S_LIFESTEAL = 0.35
 
 	local SHOOT2B_DAMAGE = 2.0
 	local SHOOT2B_LIFETIME = 2 * 60
@@ -170,6 +167,7 @@ local function initialize()
 	local ATTACK_TAG_SYRINGE_B = 2
 	local ATTACK_TAG_BOOM = 3
 	local ATTACK_TAG_GROWTH = 4
+	local ATTACK_TAG_GROWTH_S = 5
 
 	-- Self-damage function
 	-- just doing what midas does
@@ -617,8 +615,7 @@ local function initialize()
 		end
 	end)
 
-	local stateSecondary2 = ActorState.new("rexSecondary2Aim")
-	local stateSecondary2Fire = ActorState.new("rexSecondary2Shoot")
+	local stateSecondary2 = ActorState.new("rexSecondary2")
 	secondary2.sprite = sprite_skills
 	secondary2.subimage = 5
 	secondary2.cooldown = 6 * 60
@@ -755,7 +752,9 @@ local function initialize()
 		end
 	end)
 
+	--
 	-- Special: Tangling Growth
+	--
 	local debuffRexRoot = Buff.new("rexRoot")
 	debuffRexRoot.show_icon = false
 	debuffRexRoot.is_timed = true
@@ -783,10 +782,16 @@ local function initialize()
 			if inst.parent:attack_collision_canhit(target) and not target:is_climbing() and not target.intangible then
 				local t = 1 - inst.lifetime / SHOOT4_PULL_LIFETIME
 				local falloff = (1 - t)^2
-				local strength = math.max(0.1, 10 * falloff)
+				local strength = math.max(0.1, 9 * falloff)
 					
-				if GM.actor_is_classic(target) then -- classic enemies (Eg. NOT Jellyfish or Archer Bugs) are pulled horizontally to the center of the pull
-					target:move_contact_solid(180 + Math.direction(inst.x, target.y, target.x, target.y), strength)
+				if GM.actor_is_classic(target) then
+					local angle
+					if inst.x < target.x then
+						angle = 180
+					else
+						angle = 0
+					end
+					target:move_contact_solid(angle, strength)
 				elseif not GM.actor_is_boss(target) then -- non-boss, non-classic enemies are pulled directly to the center
 					target.x = target.x - math.cos(math.rad(Math.direction(inst.x, inst.y, target.x, target.y))) * strength
 					target.y = target.y + math.sin(math.rad(Math.direction(inst.x, inst.y, target.x, target.y))) * strength
@@ -801,12 +806,13 @@ local function initialize()
 	end)
 
 	local objFlowerBomb = Object.new("rexGrowthBomb")
-	sprite_flower:set_collision_mask(6, 6, 8, 8)
+	sprite_flower:set_collision_mask(4, 4, 10, 10)
 	objFlowerBomb:set_sprite(sprite_flower)
 
 	local objFlower = Object.new("rexTanglingGrowth")
 	sprite_flower_idle:set_collision_mask(20, 20, 20, 20)
 	objFlower:set_sprite(sprite_flower_idle)
+	-- i only have 1 set of sprites for the flower; ill probably make a separate object for this later
 
 	Callback.add(objFlowerBomb.on_create, function(inst)
 		inst.speed = 10
@@ -835,6 +841,8 @@ local function initialize()
 
 				local flower = objFlower:create(spawn_x, spawn_y)
 				flower.parent = inst.parent
+				flower.scepter = inst.parent:item_count(Item.find("ancientScepter"))
+				
 				inst:destroy()
 				return
 			end
@@ -843,8 +851,8 @@ local function initialize()
 			data.prev_y = inst.y
 	end)
 
-
 	Callback.add(objFlower.on_create, function(inst)
+		inst.scepter = 0
 		local data = Instance.get_data(inst)
 		data.timer = SHOOT4_TICK_TIME
 		data.pulses_left = SHOOT4_PULSES
@@ -865,6 +873,7 @@ local function initialize()
 	Callback.add(objFlower.on_step, function(inst)
 		local data = Instance.get_data(inst)
 		local parent = inst.parent
+		local boosted = inst.scepter > 0
 
 		if not parent then
 			inst:destroy()
@@ -876,21 +885,34 @@ local function initialize()
 			data.timer = 0
 			data.pulses_left = data.pulses_left - 1
 
-			for _, target in ipairs(inst:get_collisions_circle(gm.constants.pActor, SHOOT4_RADIUS, inst.x, inst.y)) do
+			local radius = SHOOT4_RADIUS
+			local damage = SHOOT4_DAMAGE
+			local lifesteal = ATTACK_TAG_GROWTH
+
+			if boosted then
+				radius = SHOOT4S_RADIUS
+				damage = SHOOT4S_DAMAGE
+				lifesteal = ATTACK_TAG_GROWTH_S
+			end
+
+			for _, target in ipairs(inst:get_collisions_circle(gm.constants.pActor, radius, inst.x, inst.y)) do
 				if inst.parent:attack_collision_canhit(target) then
 					local dir = Math.direction(inst.x, inst.y, target.x, target.y)
 					for i=0, inst.parent:buff_count(buff_mirror) do
-						local hit = parent:fire_direct(target, special.damage, dir, inst.x, inst.y, nil).attack_info
+
+						local hit = parent:fire_direct(target, damage, dir, inst.x, inst.y, nil).attack_info
 						hit.climb = i * 8 * 1.35
-						hit.__rex_info = ATTACK_TAG_GROWTH
+						hit.__rex_info = lifesteal
 					end
 				
 				end
 			end
 
+
 			local objPull = objFlowerPull:create(inst.x, inst.y)
 			objPull.parent = parent
 			objPull.team = inst.team
+			objPull.scepter = inst.scepter
 
 			gm.sound_play_at(sound4_pull.value, 0.5, 0.8 + math.random() * 0.1, inst.x, inst.y)
 
@@ -903,17 +925,34 @@ local function initialize()
 	end)
 
 	Callback.add(objFlower.on_draw, function(inst)
-		gm.draw_set_colour(Color.from_hex(0x8c4369))
-		gm.draw_circle(inst.x, inst.y, SHOOT4_RADIUS, true)
+		gm.draw_set_colour(Color.from_hex(0xff67a9))
+
+		if inst.scepter > 0 then
+			gm.draw_circle(inst.x, inst.y, SHOOT4S_RADIUS, true)
+		else
+			gm.draw_circle(inst.x, inst.y, SHOOT4_RADIUS, true)
+		end
+
 	end)
 
-	local stateSpecial = ActorState.new("rexSpecial")
 	special.sprite = sprite_skills
 	special.subimage = 3
-	special.cooldown = 14 * 60
+	special.cooldown = 2 * 60
 	special.damage = SHOOT4_DAMAGE
+	special.upgrade_skill = specialS
+
+	specialS.sprite = sprite_skills
+	specialS.subimage = 4
+	specialS.damage = SHOOT4S_DAMAGE
+	specialS.cooldown = 2 * 60
+
+	local stateSpecial = ActorState.new("rexSpecial")
 	
 	Callback.add(special.on_activate, function(actor, data)
+		actor:set_state(stateSpecial)
+	end)
+
+	Callback.add(specialS.on_activate, function(actor, data)
 		actor:set_state(stateSpecial)
 	end)
 
@@ -958,6 +997,13 @@ local function initialize()
 				GM.apply_buff(target, debuffRexRoot, SHOOT4_PULL_LIFETIME, 1)
 				GM.apply_buff(target, slow, 1 * 60, 1)
 				hit_info.attack_info.parent:heal(hit_info.damage * SHOOT4_LIFESTEAL)
+
+			-- i love being lazy
+			elseif attack_tag == ATTACK_TAG_GROWTH_S then
+				local slow = Buff.find("slow")
+				GM.apply_buff(target, debuffRexRoot, SHOOT4_PULL_LIFETIME, 1)
+				GM.apply_buff(target, slow, 1 * 60, 1)
+				hit_info.attack_info.parent:heal(hit_info.damage * SHOOT4S_LIFESTEAL)
 			end
 		end
 	end)
