@@ -17,9 +17,6 @@ local function initialize()
   local rex = Survivor.new("rex")
 	-- how the hell do i put this guy inbetween merc and laoder
 
-	-- Make DISPERSE charge-able
-	-- Add scepter upgrade
-
 	-- Sprites
 	local sprite_select = 				Sprite.new("rexSelect", path.combine(SPRITE_PATH, "select.png"), 23, 56, 0)
 	local sprite_skills =				Sprite.new("RexSkills", path.combine(SPRITE_PATH, "skills.png"), 6)
@@ -43,7 +40,7 @@ local function initialize()
 
 	local sprite_shoot_1 = 				Sprite.new("RexShoot1", path.combine(SPRITE_PATH, "shoot1.png"), 10, 17, 36)
 	local sprite_shoot_2 = 				Sprite.new("RexShoot2", path.combine(SPRITE_PATH, "shoot2.png"), 6, 25, 59)
-	local sprite_shoot_3 = 				Sprite.new("RexShoot3", path.combine(SPRITE_PATH, "shoot3.png"), 6, 24, 36)
+	local sprite_shoot_3 = 				Sprite.new("RexShoot3", path.combine(SPRITE_PATH, "shoot3.png"), 5, 24, 36)
 
 	local sprite_syringe = 				Sprite.new("RexSyringe", path.combine(SPRITE_PATH, "syringe.png"), 1, 13, 5)
 	local sprite_syringe_big = 			Sprite.new("RexSyringeBig", path.combine(SPRITE_PATH, "syringeBig.png"), 1, 18, 8)
@@ -137,11 +134,10 @@ local function initialize()
 
 	local SHOOT2_DAMAGE = 2.7
 	local SHOOT2_DELAY = 0.5 * 60
-	local SHOOT2_COOLDOWN = 0.8 * 60
 	local SHOOT2_RADIUS = 60
 
 	local SHOOT3_DAMAGE = 0.3
-	local SHOOT3_KNOCKBACK = 8
+	local SHOOT3_KNOCKBACK = 8.5
 	local SHOOT3_RECOIL = 3.5
 	local SHOOT3_LIFESTEAL = 0.6
 	local WEAKEN_DEBUFF_DURATION = 3 * 60
@@ -198,7 +194,7 @@ local function initialize()
 		for _, enemy in ipairs(Instance.find_all(gm.constants.pActor)) do
 			if enemy ~= actor and actor:attack_collision_canhit(enemy) then
 				if math.abs(enemy.y - base_y) <= 80 then
-					if (enemy.x - start_x) * dir > 0 and math.abs(enemy.x - start_x) <= 250 then
+					if (enemy.x - start_x) * dir > 0 and math.abs(enemy.x - start_x) <= 350 then
 						local d = math.abs(enemy.x - start_x)
 						if d < closest_dist then
 							closest = enemy
@@ -308,7 +304,9 @@ local function initialize()
 		end
 	end)
 
+	--
 	-- Primary: INJECT
+	--
 	local statePrimary = ActorState.new("rexPrimary")
 	primary.sprite = sprite_skills
 	primary.subimage = 0
@@ -444,7 +442,7 @@ local function initialize()
 
 	secondary.sprite = sprite_skills
 	secondary.subimage = 1
-	secondary.cooldown = SHOOT2_COOLDOWN
+	secondary.cooldown = 0.8 * 60
 	secondary.damage = SHOOT2_DAMAGE
 	secondary.does_change_activity_state = true
 	secondary.require_key_press = true
@@ -463,7 +461,7 @@ local function initialize()
 		actor:skill_util_strafe_init()
 		
 		actor.aiming = 1
-		actor.fired = 0
+		data.fired = 0
 
 		if gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) ~= 0 then
 			actor.hold_facing_direction_xscale = gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) -- stupid dumb idiotic bullshit fuckery, apparently vanilla code also uses that lmao
@@ -481,6 +479,7 @@ local function initialize()
 		-- Aiming
 		if actor.aiming == 1 then
 			actor.image_index2 = 0
+			actor:skill_util_strafe_update(0.5, 0.8)
 			actor:skill_util_step_strafe_sprites()
 
 			local second = ActorSkill.wrap(actor:get_active_skill(1))
@@ -489,15 +488,16 @@ local function initialize()
 			-- On secondary release: stop aiming
 			if not actor:control("skill2", 0) then
 				actor.aiming = 0
-				-- actor.image_index2 = 0
 			end
 		end
 
-		actor:skill_util_strafe_update(0.25 * actor.attack_speed, 0.5)
-		actor:skill_util_step_strafe_sprites()
+		if actor.aiming ~= 1 then
+			actor:skill_util_strafe_update(0.3 * actor.attack_speed, 0.5)
+			actor:skill_util_step_strafe_sprites()
+		end
 
 		-- Firing
-		if actor.fired == 0 and actor.image_index2 >= 1 then
+		if data.fired == 0 and actor.image_index2 >= 1 then
 			rex_inst_damage(actor, 0.12)
 
 			local target = find_horizontal_enemy(actor)
@@ -517,7 +517,7 @@ local function initialize()
 
 			actor:sound_play(sound2_launch.value, 0.5, 0.9 + math.random() * 0.1)
 
-			actor.fired = 1
+			data.fired = 1
 		end
 		actor:skill_util_exit_state_on_anim_end()
 	end)
@@ -592,6 +592,7 @@ local function initialize()
 
 	Callback.add(objPreview2.on_draw, function(inst)
 		local actor = inst.parent
+
 		if actor:get_active_skill(1).skill_id == secondary2.value then
 			if actor.aiming == 1 then
 				local target = find_horizontal_enemy(actor)
@@ -629,8 +630,9 @@ local function initialize()
 	Callback.add(stateSecondary2.on_enter, function(actor, data)
 		actor.image_index2 = 0
 		actor:skill_util_strafe_init()
+
 		actor.aiming = 1
-		actor.firing = 0
+		data.fired = 0
 
 		if gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) ~= 0 then
 			actor.hold_facing_direction_xscale = gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) -- stupid dumb idiotic bullshit fuckery, apparently vanilla code also uses that lmao
@@ -643,25 +645,32 @@ local function initialize()
 	end)
 
 	Callback.add(stateSecondary2.on_step, function(actor, data)
-		actor.sprite_index2 = sprite_shoot_2_aim
+		actor.sprite_index2 = sprite_shoot_2
 
 		if actor.aiming == 1 then
+			actor.image_index2 = 0
+			actor:skill_util_strafe_update(0.5, 0.8)
+			actor:skill_util_step_strafe_sprites()
+
 			local second = ActorSkill.wrap(actor:get_active_skill(1))
 			second:freeze_cooldown()
 
-			actor:skill_util_step_strafe_sprites()
-
 			-- if not holding down secondary: exit state
-			if not Util.bool(actor.x_skill) then
+			if not actor:control("skill2", 0) then
 				actor.aiming = 0
 			end
 		end
 
-		actor.sprite_index2 = sprite_shoot_2
-		actor:skill_util_strafe_update(0.25 * actor.attack_speed, 0.5)
-		actor:skill_util_step_strafe_sprites()
+		if actor.aiming ~= 1 then
+			actor:skill_util_strafe_update(0.3 * actor.attack_speed, 0.5)
+			actor:skill_util_step_strafe_sprites()
+		end
 
+		log.debug(data.fired)
+		log.debug(actor.image_index2)
+		
 		if data.fired == 0 and actor.image_index2 >= 1 then
+			log.debug("hi")
 			local target = find_horizontal_enemy(actor)
 
 			local spawn_x, spawn_y
@@ -674,6 +683,7 @@ local function initialize()
 				spawn_y = actor.y - 5
 			end
 
+			
 			local oBarrage = objBarrage:create(spawn_x, spawn_y)
 			oBarrage.parent = actor
 
@@ -702,10 +712,11 @@ local function initialize()
 
 	utility.sprite = sprite_skills
 	utility.subimage = 2
-	utility.cooldown = 6 * 60
+	utility.cooldown = 5 * 60
 	utility.damage = SHOOT3_DAMAGE
 	utility.is_primary = false
 	utility.is_utility = true
+	utility.require_key_press = false
 	utility.disable_aim_stall = true -- allows for wavedashing
 
 	Callback.add(utility.on_activate, function(actor, skill, slot)
@@ -715,20 +726,46 @@ local function initialize()
 	Callback.add(stateUtility.on_enter, function(actor, data)
 		actor.image_index = 0
 		data.fired = 0
+		data.hold_time = 0
+		data.charged = false
+		
 		actor:sound_play(sound3_charge, 0.3, 0.9 + math.random() * 0.1)
 	end)
 
 	Callback.add(stateUtility.on_step, function(actor, data)
-		actor:skill_util_fix_hspeed()
-		actor:actor_animation_set(sprite_shoot_3, 0.25)
+		-- log.debug(actor.image_index)
+		
 
-		if actor.image_index >= 1 and data.fired == 0 then
+		if data.fired == 0 then
+			local util = ActorSkill.wrap(actor:get_active_skill(2))
+			util:freeze_cooldown()
+			
+			data.hold_time = data.hold_time + 1
+			if data.hold_time >= 8 then
+				data.charged = true
+				data.fired = 1
+			end
+
+			if not actor:control("skill3", 0) then
+				data.fired = 1
+			end
+		end
+
+		if data.fired ~= 0 then
+			actor:skill_util_fix_hspeed()
+			actor:actor_animation_set(sprite_shoot_3, 0.25)
 			actor.activity_free = 1
+		end
+
+		if actor.image_index >= 1 and data.fired == 1 then
+			log.debug(data.charged)
+			local charged_mult = data.charged and 1 or 0.6
+
 			for i=0, actor:buff_count(buff_mirror) do
-				local boom = actor:fire_explosion(actor.x + (80 * actor.image_xscale) + (i * 20), actor.y, 160, 70, utility.damage, nil, nil).attack_info
+				local boom = actor:fire_explosion(actor.x + (80 * actor.image_xscale) + (i * 20), actor.y, 160, 90, utility.damage, nil, nil).attack_info
 				boom.climb = i * 8 * 1.35
 				boom.__rex_info = ATTACK_TAG_BOOM
-				boom.knockback = SHOOT3_KNOCKBACK
+				boom.knockback = SHOOT3_KNOCKBACK * charged_mult
 				boom.knockback_direction = actor.image_xscale
 			end
 			local direction = actor:skill_util_facing_direction()
@@ -736,14 +773,20 @@ local function initialize()
 			particle:set_direction(direction - 50, direction + 50, 0, 0)
 			particle:create_color(actor.x, actor.y, Color.from_rgb(179, 201, 139), 20)
 
-			actor.pHspeed = (actor.pHspeed * 0.5) + actor.pHmax * (SHOOT3_RECOIL) * -actor.image_xscale
+			actor.pHspeed = ((actor.pHspeed * 0.5) + actor.pHmax * (SHOOT3_RECOIL) * -actor.image_xscale) *  charged_mult
+			if not actor:is_grounded() then
+				actor.pVspeed = actor.pVmax * -0.4
+				actor.force_jump_held = true
+			end
 
 			actor:sound_play(sound3_shoot, 1, 0.9 + math.random() * 0.9)
 
-			data.fired = 1
+			data.fired = 2
 		end
 
-		actor:skill_util_exit_state_on_anim_end()
+		if data.fired == 2 then
+			actor:skill_util_exit_state_on_anim_end()
+		end
 	end)
 
 	Callback.add(stateUtility.on_get_interrupt_priority, function(actor, data)
@@ -782,16 +825,10 @@ local function initialize()
 			if inst.parent:attack_collision_canhit(target) and not target:is_climbing() and not target.intangible then
 				local t = 1 - inst.lifetime / SHOOT4_PULL_LIFETIME
 				local falloff = (1 - t)^2
-				local strength = math.max(0.1, 9 * falloff)
+				local strength = math.max(0.1, 12 * falloff)
 					
 				if GM.actor_is_classic(target) then
-					local angle
-					if inst.x < target.x then
-						angle = 180
-					else
-						angle = 0
-					end
-					target:move_contact_solid(angle, strength)
+					target:move_contact_solid(180 + Math.direction(inst.x, target.y, target.x, target.y), strength)
 				elseif not GM.actor_is_boss(target) then -- non-boss, non-classic enemies are pulled directly to the center
 					target.x = target.x - math.cos(math.rad(Math.direction(inst.x, inst.y, target.x, target.y))) * strength
 					target.y = target.y + math.sin(math.rad(Math.direction(inst.x, inst.y, target.x, target.y))) * strength
@@ -937,14 +974,14 @@ local function initialize()
 
 	special.sprite = sprite_skills
 	special.subimage = 3
-	special.cooldown = 2 * 60
+	special.cooldown = 14 * 60
 	special.damage = SHOOT4_DAMAGE
 	special.upgrade_skill = specialS
 
 	specialS.sprite = sprite_skills
 	specialS.subimage = 4
 	specialS.damage = SHOOT4S_DAMAGE
-	specialS.cooldown = 2 * 60
+	specialS.cooldown = 14 * 60
 
 	local stateSpecial = ActorState.new("rexSpecial")
 	

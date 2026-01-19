@@ -1,3 +1,19 @@
+`v1.0.5`
+
+* Scepter Upgrade: Ravenous Growth
+	* Massively increased range. Slightly increased damage, and lifesteal
+
+*A lot of Scepter upgrades are actually pretty disappointing. This one should be in the upper end in terms of increases in power level.*
+
+- Mortar range 250 -> 350
+* Fixed Barrage not working (lol)
+
+* DISPERSE now applies a weaker knockback and recoil if tapped, behaving normally if otherwise held
+* DISPERSE now applies a minor amount of vertical force if used in the air
+* DISPERSE cooldown 6s -> 5s
+
+*For when you want to DISPERSE for the healing/debuffs without launching enemies out of range. The Afterburner stuff still works exactly the same. If reception to this is lukewarm I may ditch this entirely, but I always wanted DISPERSE to have this functionality because of how absurdly broken RoR2 Tangling Growth is.*
+
 `v1.0.4`
 
 Next update is going to include charge-able DISPERSE and (finally) the Scepter upgrade. I wanted to push this update first because it fixes a really important bug.
