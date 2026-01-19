@@ -733,9 +733,6 @@ local function initialize()
 	end)
 
 	Callback.add(stateUtility.on_step, function(actor, data)
-		-- log.debug(actor.image_index)
-		
-
 		if data.fired == 0 then
 			local util = ActorSkill.wrap(actor:get_active_skill(2))
 			util:freeze_cooldown()

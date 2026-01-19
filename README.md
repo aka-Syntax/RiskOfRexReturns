@@ -20,7 +20,3 @@ If you would like to shower me with unending praise and adulation (or contact me
 - Starstorm Returns team: For allowing referencing of their code and generally being helpful
 - Captain's Orders Mod: Basis for the Seed Mortar vfx and logic
 - [Risk of Rain Returns Modding](https://discord.gg/VjS57cszMq): For their patience with my questions, and for making modding possible
-
----
-
-###### this mod literally only exists because i wanted to go on a 4 minute side quest to draw rex in rorr style #lol
