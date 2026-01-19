@@ -193,7 +193,7 @@ local function initialize()
 
 		for _, enemy in ipairs(Instance.find_all(gm.constants.pActor)) do
 			if enemy ~= actor and actor:attack_collision_canhit(enemy) then
-				if math.abs(enemy.y - base_y) <= 80 then
+				if math.abs(enemy.y - base_y) <= 100 then
 					if (enemy.x - start_x) * dir > 0 and math.abs(enemy.x - start_x) <= 350 then
 						local d = math.abs(enemy.x - start_x)
 						if d < closest_dist then
@@ -423,7 +423,7 @@ local function initialize()
 					inst.x = target.x
 					inst.y = target.y
 				else
-					inst.x = actor.x + 150 * actor.image_xscale
+					inst.x = actor.x + 175 * actor.image_xscale
 					inst.y = actor.y - 5
 				end
 
@@ -600,7 +600,7 @@ local function initialize()
 					inst.x = target.x
 					inst.y = target.y
 				else
-					inst.x = actor.x + 250 * actor.image_xscale
+					inst.x = actor.x + 175 * actor.image_xscale
 					inst.y = actor.y - 5
 				end
 

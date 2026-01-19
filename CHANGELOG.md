@@ -5,8 +5,8 @@
 
 *A lot of Scepter upgrades are actually pretty disappointing. This one should be in the upper end in terms of increases in power level.*
 
-- Mortar range 250 -> 350
-* Fixed Barrage not working (lol)
+- Mortar horizontal range 250 -> 350
+- Fixed Barrage not working (lol)
 
 * DISPERSE now applies a weaker knockback and recoil if tapped, behaving normally if otherwise held
 * DISPERSE now applies a minor amount of vertical force if used in the air
