@@ -1,12 +1,12 @@
-`v1.1.0`
+ ### v1.1.0
 
 Mini-ish update, nothing major/no new content; just wanted to put this out while I have the luxury to work on this.
 
 * Update ALL Sprites
 	* This includes the prior missing sprites, including Decoy, Death, and Multiplayer Drones
 	* Todo: Mortar explosion, New Select animation, Logbook entry
-* REX now appears in the select screen between their friends Mercenary and Loader (like ror2)
-* All skills have updated visuals for lifesteal (like ror2)
+* REX now appears in the select screen between their friends Mercenary and Loader :D (like ror2)
+* All skills now have updated visuals for lifesteal (like ror2)
 * Inject third syringe now has a trail (like ror2)
 	
 *All 3 having trails looked messy. I also haven't been able to figure out how to make them fire in a fan (or if I even want them to, but probably not), so I think only the third one having a trail is fine.*
@@ -14,21 +14,23 @@ Mini-ish update, nothing major/no new content; just wanted to put this out while
 * Mortar now starts with 2 charges
 * Damage 280% -> 250%
 
-*Trying to cut a little down on spam-clicking pains, now you can double-tap instead of destroying your finger. This is pretty experimental so be sure to lmk how this plays.*
+*Trying to cut a little down on spam-clicking pains, now you can double-tap instead of destroying your finger. I didn't test this at all so be sure to lmk how this plays.*
 
 * SATURATE skill retired for now
 
 *I want to think a little harder about any alts I want before I commit to adding them; Saturate was just easy to make because of how similar it was to Mortar. If you still want to play with it (for whatever reason), you can just un-comment the relevant code.*
 
-* Flower has updated viduals. 
+* Flower has updated viduals
 	* Now has an animation for opening up after landing, as well as an idle animation
 	* Now no longer gets stuck grotesquely in the floor
 	* Todo: Tether vfx between enemy and flower
 	* Todo: Cap tethered enemies? Split damage between tethered enemies? idk
 
-*Next up on the docket is likely going to be networking and skins. Apparently Zerimp released with skins straight up so I'll definitely be looking into that. Networking is going to be a pain in the ass so it might take a long ass while though. also alabaster dawn early access out NOW GO PLAY IT*
+Next up on the docket is likely going to be networking and skins. Apparently Zerimp released with skins straight up so I'll definitely be looking into that. Networking is going to be a pain in the ass so it might take a long ass while though. 
 
-`v1.0.5`
+alabaster dawn early access is out now GO PLAY IT
+
+### v1.0.5
 
 * Scepter Upgrade: Ravenous Growth
 	* Massively increased range. Slightly increased damage, and lifesteal
@@ -44,7 +46,7 @@ Mini-ish update, nothing major/no new content; just wanted to put this out while
 
 *For when you want to DISPERSE for the healing/debuffs without launching enemies out of range. The Afterburner stuff still works exactly the same. If reception to this is lukewarm I may ditch this entirely, but I always wanted DISPERSE to have this functionality because of how absurdly broken RoR2 Tangling Growth is.*
 
-`v1.0.4`
+### v1.0.4
 
 Next update is going to include charge-able DISPERSE and (finally) the Scepter upgrade. I wanted to push this update first because it fixes a really important bug.
 
@@ -63,7 +65,7 @@ Next update is going to include charge-able DISPERSE and (finally) the Scepter u
 
 *For once I actually played a run to test this. REX should no longer cause any abrupt screen flashing or game crashes, sorry about that.*
 
-`v1.0.3`
+### v1.0.3
 * Mortar radius reduced from 75 to 60
 * Growth damage reduced from 150% to 50%
 * Growth lifesteal increased from 15% to 25%
@@ -78,7 +80,7 @@ Next update is going to include charge-able DISPERSE and (finally) the Scepter u
 
 *Flower used to create a pull object for every enemy in its range, then each object would pull every enemy within its range towards it. Now it only pulls each enemy once.*
 
-`v1.0.2`
+### v1.0.2
 * New Secondary: SATURATE 
     * Fires a barrage of stunning missiles at the targeted location
 * INJECT damage reduced from 3x40% to 3x30%
@@ -93,8 +95,8 @@ Next update is going to include charge-able DISPERSE and (finally) the Scepter u
 
 Next up is probably going to be the Scepter upgrade, then after that the new sprites/visuals. I wanted to push this update out first because god dammit i broke the special AGAIN
 
-`v1.0.1`
+### v1.0.1
 * Fixed God punishing you for clicking the Special button
 
-`v1.0.0`
+### v1.0.0
 * Initial release
