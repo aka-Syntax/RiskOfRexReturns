@@ -1,4 +1,7 @@
- ### v1.1.0
+### v1.1.1
+* WHOOPS
+
+### v1.1.0
 
 Mini-ish update, nothing major/no new content; just wanted to put this out while I have the luxury to work on this.
 
