@@ -1,11 +1,11 @@
 ﻿{
 	"name": "RiskOfRexReturns",
-	"version_number": "1.0.5",
+	"version_number": "1.1.0",
 	"website_url": "https://github.com/aka-Syntax/RiskOfRexReturns",
 	"description": "..and so they left, growing anew with every step. | WORK IN PROGRESS RELEASE",
 	"dependencies": [
-		"ReturnOfModding-ReturnOfModding-1.1.14",
-		"ReturnsAPI-ReturnsAPI-0.1.43",
+		"ReturnOfModding-ReturnOfModding-1.1.29",
+		"ReturnsAPI-ReturnsAPI-0.1.56",
 		"LuaENVY-ENVY-1.2.0"
 	]
 }

@@ -1,3 +1,33 @@
+`v1.1.0`
+
+Mini-ish update, nothing major/no new content; just wanted to put this out while I have the luxury to work on this.
+
+* Update ALL Sprites
+	* This includes the prior missing sprites, including Decoy, Death, and Multiplayer Drones
+	* Todo: Mortar explosion, New Select animation, Logbook entry
+* REX now appears in the select screen between their friends Mercenary and Loader (like ror2)
+* All skills have updated visuals for lifesteal (like ror2)
+* Inject third syringe now has a trail (like ror2)
+	
+*All 3 having trails looked messy. I also haven't been able to figure out how to make them fire in a fan (or if I even want them to, but probably not), so I think only the third one having a trail is fine.*
+
+* Mortar now starts with 2 charges
+* Damage 280% -> 250%
+
+*Trying to cut a little down on spam-clicking pains, now you can double-tap instead of destroying your finger. This is pretty experimental so be sure to lmk how this plays.*
+
+* SATURATE skill retired for now
+
+*I want to think a little harder about any alts I want before I commit to adding them; Saturate was just easy to make because of how similar it was to Mortar. If you still want to play with it (for whatever reason), you can just un-comment the relevant code.*
+
+* Flower has updated viduals. 
+	* Now has an animation for opening up after landing, as well as an idle animation
+	* Now no longer gets stuck grotesquely in the floor
+	* Todo: Tether vfx between enemy and flower
+	* Todo: Cap tethered enemies? Split damage between tethered enemies? idk
+
+*Next up on the docket is likely going to be networking and skins. Apparently Zerimp released with skins straight up so I'll definitely be looking into that. Networking is going to be a pain in the ass so it might take a long ass while though. also alabaster dawn early access out NOW GO PLAY IT*
+
 `v1.0.5`
 
 * Scepter Upgrade: Ravenous Growth
