@@ -6,7 +6,7 @@ return {
 		},
 		rexX = {
 			name = "Seed Mortar",
-			description = "<r>Costs 12% current health.</c> Fire a shell at the targeted location for <y>300% damage.</c>"
+			description = "<r>Costs 12% current health.</c> Fire a shell at the targeted location for <y>250% damage.</c>"
     	},
 		rexX2 = {
 			name = "SATURATE",
