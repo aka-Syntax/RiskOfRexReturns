@@ -1,3 +1,6 @@
+### v1.1.2
+* Fixed backwards walk animation playing in reverse
+
 ### v1.1.1
 * WHOOPS
 
