@@ -27,7 +27,7 @@ local function initialize()
 	survivororder:insert(10, rex.value)
 
 	-- Sprites
-	local sprite_select = 				Sprite.new("rexSelect", path.combine(SPRITE_PATH, "select.png"), 23, 56, 0)
+	local sprite_select = 				Sprite.new("RexSelect", path.combine(SPRITE_PATH, "select.png"), 23, 56, 0)
 	local sprite_skills =				Sprite.new("RexSkills", path.combine(SPRITE_PATH, "skills.png"), 6)
 	local sprite_portrait =				Sprite.new("RexPortrait", path.combine(SPRITE_PATH, "portrait.png"), 3)
 	local sprite_portrait_small =		Sprite.new("RexPortraitSmall", path.combine(SPRITE_PATH, "portraitSmall.png"))
@@ -97,7 +97,7 @@ local function initialize()
 
 	rex:set_stats_level({
 		health = 44,
-		damage = 2.8,
+		damage = 3,
 		regen = 0.015,
 		armor = 3
 	})
@@ -116,7 +116,6 @@ local function initialize()
 
 	rex.primary_color = Color.from_rgb(151, 177, 95)
 	rex.select_sound_id = sound_select
-	-- actually need to check if this is right
 	rex.cape_offset = Array.new({-5, -7, 0, 3})
 
 	Callback.add(rex.on_init, function(actor)
@@ -154,29 +153,29 @@ local function initialize()
 	local SHOOT1_DAMAGE = 0.3
 	local SHOOT1_SPEED = 20
 	local SHOOT1_LIFETIME = 2 * 60
-	local SHOOT1_LIFESTEAL = 0.4
+	local SHOOT1_LIFESTEAL = 0.3
 	local BREAK_DEBUFF_DURATION = 4 * 60
 
-	local SHOOT2_DAMAGE = 2.5
+	local SHOOT2_DAMAGE = 2
 	local SHOOT2_DELAY = 0.5 * 60
 	local SHOOT2_RADIUS = 60
 
-	local SHOOT3_DAMAGE = 0.3
+	local SHOOT3_DAMAGE = 0.5
 	local SHOOT3_KNOCKBACK = 8.5
 	local SHOOT3_RECOIL = 3.5
 	local SHOOT3_LIFESTEAL = 0.6
 	local WEAKEN_DEBUFF_DURATION = 3 * 60
 
-	local SHOOT4_DAMAGE = 0.5
+	local SHOOT4_DAMAGE = 1
 	local SHOOT4_TICK_TIME = 90
 	local SHOOT4_PULSES = 8
 	local SHOOT4_RADIUS = 180
 	local SHOOT4_PULL_LIFETIME = 0.2 * 60
-	local SHOOT4_LIFESTEAL = 0.2
+	local SHOOT4_LIFESTEAL = 0.25
 
-	local SHOOT4S_DAMAGE = 0.8
+	local SHOOT4S_DAMAGE = 1.35
 	local SHOOT4S_RADIUS = 250
-	local SHOOT4S_LIFESTEAL = 0.35
+	local SHOOT4S_LIFESTEAL = 0.40
 
 	-- local SHOOT2B_DAMAGE = 2.0
 	-- local SHOOT2B_LIFETIME = 2 * 60
@@ -243,8 +242,7 @@ local function initialize()
 	particRexHeal:set_life(20, 20)
 	particRexHeal:set_alpha2(1, 0)
 	particRexHeal:set_size(0.2, 0.2, -0.001, 0)
-	particRexHeal:set_color3(Color.from_hex(0x579943), Color.from_hex(0x98e352), Color.from_hex(0x579943))
-	---particRexHeal:set_color3(Color.from_hex(0x327b2b), Color.from_hex(0xbbc865), Color.from_hex(0x327b2b))
+	particRexHeal:set_color3(Color.from_hex(0x8ebe7f), Color.from_hex(0xadff60), Color.from_hex(0x8ebe7f))
 
 	TRAVEL_TIME = 1 / 20 -- in 20 frames
 
@@ -278,11 +276,21 @@ local function initialize()
 
 		local dx, dy = inst.x - inst.xprevious, inst.y - inst.yprevious
 		
-		-- how dotheth this wortketh
 		if quality >= 2 then
-			 local angle = gm.point_direction(0, 0, dx, dy)
-    		particRexHeal:set_orientation(angle, angle, 0, 0, 0)
-			particRexHeal:create(inst.x, inst.y, 1)
+			local angle = gm.point_direction(0, 0, dx, dy)
+			particRexHeal:set_orientation(angle, angle, 0, 0, 0)
+
+			local dist = gm.point_distance(0, 0, dx, dy)
+			local spacing = 2
+			local count = math.max(1, math.ceil(dist / spacing))
+
+			for i = 0, count do
+				local t = i / count
+				local px = gm.lerp(inst.xprevious, inst.x, t)
+				local py = gm.lerp(inst.yprevious, inst.y, t)
+
+				particRexHeal:create(px, py, 1)
+			end
 		end
 
 		if data.fract + TRAVEL_TIME > 1 then
@@ -302,9 +310,8 @@ local function initialize()
 	debuffRexBreak.is_timed = true
 	debuffRexBreak.is_debuff = true
 	debuffRexBreak.show_icon = true
-	debuffRexBreak.max_stack = 999
-	-- FIGURE OUT HOW TO DO THE STACKING NUMBER STUFF
-
+	debuffRexBreak.max_stack = 10
+	
 	RecalculateStats.add(function(actor, api)
 		if actor:buff_count(debuffRexBreak) > 0 then
 			api.armor_add(-3 * actor:buff_count(debuffRexBreak))
@@ -333,6 +340,7 @@ local function initialize()
 	particSyringe:set_shape(Particle.Shape.LINE)
 	particSyringe:set_life(20, 20)
 	particSyringe:set_alpha2(1, 0)
+	particSyringe:set_color2(Color.from_hex(0x5da04f), Color.from_hex(0x3d7246))
 	particSyringe:set_size(0.3, 0.3, -0.001, 0)
 	particSyringe:set_scale(1.1, 0.4)
 
@@ -544,7 +552,7 @@ local function initialize()
 	secondary.sprite = sprite_skills
 	secondary.subimage = 1
 	secondary.cooldown = 0.8 * 60
-	secondary.max_stock = 2
+	-- secondary.max_stock = 1
 	secondary.damage = SHOOT2_DAMAGE
 	secondary.does_change_activity_state = true
 	secondary.require_key_press = true
@@ -768,9 +776,6 @@ local function initialize()
 	-- 		actor:skill_util_step_strafe_sprites()
 	-- 	end
 
-	-- 	log.debug(data.fired)
-	-- 	log.debug(actor.image_index2)
-
 	-- 	if data.fired == 0 and actor.image_index2 >= 1 then
 	-- 		log.debug("hi")
 	-- 		local target = find_horizontal_enemy(actor)
@@ -857,7 +862,6 @@ local function initialize()
 		end
 
 		if actor.image_index >= 1 and data.fired == 1 then
-			log.debug(data.charged)
 			local charged_mult = data.charged and 1 or 0.6
 
 			for i=0, actor:buff_count(buff_mirror) do
@@ -1093,7 +1097,6 @@ local function initialize()
 				data.grow_done = true
 			end
 
-			-- ease-out (fast start, slow end)
 			local t = 1 - (1 - data.grow_t) * (1 - data.grow_t)
 
 			local final_radius = (inst.scepter > 0) and SHOOT4S_RADIUS or SHOOT4_RADIUS
@@ -1102,13 +1105,13 @@ local function initialize()
 			data.radius = (inst.scepter > 0) and SHOOT4S_RADIUS or SHOOT4_RADIUS
 		end
 		
-		gm.draw_set_colour(Color.from_hex(0x8d5cab))
+		gm.draw_set_colour(Color.from_hex(0xc279b2))
 		gm.draw_circle(inst.x, inst.y, data.radius, true)
 	end)
 
 	special.sprite = sprite_skills
 	special.subimage = 3
-	special.cooldown = 1 * 60
+	special.cooldown = 14 * 60
 	special.damage = SHOOT4_DAMAGE
 	special.upgrade_skill = specialS
 
@@ -1179,7 +1182,7 @@ local function initialize()
 				GM.apply_buff(target, slow, 1 * 60, 1)
 
 				local inst = efRexHeal:create(hit_info.x, hit_info.y)
-				inst.parent = actor
+				inst.parent = hit_info.attack_info.parent
 				Instance.get_data(inst).target = target
 				Instance.get_data(inst).heal_amt = hit_info.damage * SHOOT4_LIFESTEAL
 
@@ -1190,7 +1193,7 @@ local function initialize()
 				GM.apply_buff(target, slow, 1 * 60, 1)
 
 				local inst = efRexHeal:create(hit_info.x, hit_info.y)
-				inst.parent = actor
+				inst.parent = hit_info.attack_info.parent
 				Instance.get_data(inst).target = target
 				Instance.get_data(inst).heal_amt = hit_info.damage * SHOOT4S_LIFESTEAL
 			end

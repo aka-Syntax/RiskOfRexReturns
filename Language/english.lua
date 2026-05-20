@@ -2,11 +2,11 @@ return {
 	skill = {
 		rexZ = {
 			name = "INJECT",
-			description = "Fire three syringes that deal <y>3x30% damage</c> and <y>reduce armor.</c> The last syringe has <g>40% lifesteal.</c>"
+			description = "Fire three syringes that deal <y>3x30% damage</c> and <y>reduce armor.</c> The last syringe has <g>30% lifesteal.</c>"
 		},
 		rexX = {
 			name = "Seed Mortar",
-			description = "<r>Costs 12% current health.</c> Fire a shell at the targeted location for <y>250% damage.</c>"
+			description = "<r>Costs 12% current health.</c> Fire a shell at the targeted location for <y>200% damage.</c>"
     	},
 		rexX2 = {
 			name = "SATURATE",
@@ -14,15 +14,15 @@ return {
 		},
 		rexC = {
 			name = "DISPERSE",
-			description = "Charge up and fire a shockwave for <y>30% damage</c> with <g>60% lifesteal</c>. <b>Pushes enemies away</c>, <y>slows,</c> and <y>reduces armor.</c>"
+			description = "Charge up and fire a shockwave for <y>50% damage</c> with <g>60% lifesteal</c>. <b>Pushes enemies away</c>, <y>slows,</c> and <y>reduces armor.</c>"
 		},
 		rexV = {
 			name = "Tangling Growth",
-			description = "<r>Costs 24% current health</c>. Deploy a trap that <y>slows</c> and <b>pulls</c> nearby enemies, dealing <y>8x50% damage</c> with <g>20% lifesteal.</c>"
+			description = "<r>Costs 24% current health</c>. Deploy a trap that <y>slows</c> and <b>pulls</c> nearby enemies, dealing <y>8x100% damage</c> with <g>25% lifesteal.</c>"
 		},
 		rexVUpgrade = {
 			name = "Ravenous Growth",
-			description = "<r>Costs 24% current health</c>. Deploy a trap that <y>slows</c> and <b>pulls</c> nearby enemies in a massive radius, dealing <y>8x80% damage</c> with <g>35% lifesteal.</c>"
+			description = "<r>Costs 24% current health</c>. Deploy a trap that <y>slows</c> and <b>pulls</c> nearby enemies in a massive radius, dealing <y>8x135% damage</c> with <g>40% lifesteal.</c>"
 		}
 	},
 

@@ -1,3 +1,24 @@
+### v1.1.3
+
+* Forgot to change flower cooldown back to normal :p
+* Fixed flower not lifestealing
+* Updated lifesteal trail; produces a constant line regardless of distance 
+
+* Damage 10+2.8 -> 10+3
+* INJECT debuff cap 999 -> 10
+
+*This probably should have come earlier, whoops. Now, the max -armor you can get from just using INJECT is -30, which aligns with RoR2 weaken's -30 armor.*
+
+* INJECT lifesteal 40% -> 30%
+* Mortar damage 250% -> 200%
+* Removed extra Mortar charge
+* Disperse damage 30% -> 50%
+* Flower damage 8x50% -> 8x100%
+* Lifesteal 20% -> 25%
+* Boosted: Damage 8x80% -> 8x135%, Lifesteal 35% -> 40%
+
+*With these changes I'm a little happier with where REX is in terms of the push and pull of your health. With the Inject -armor nerf you don't heal as much from lifesteal anymore, so you might actually want to click on a healing item every now and then. You're still pretty likely to kill everything if you just throw all your abilities out and spam Mortar, but you'll constantly be at around 50% health or lower, which can be pretty dangerous. You also lose out on #1 iframe generator (Prophet's Cape) for the crime of existing as REX.*
+
 ### v1.1.2
 * Fixed backwards walk animation playing in reverse
 
