@@ -15,23 +15,22 @@ local SOUND_PATH = path.combine(PATH, "Sounds")
 
 local function initialize()
 	local rex = Survivor.new("rex")
-	-- how the hell do i put this guy inbetween merc and laoder
 
-	local survivororder = List.wrap(Global.survivor_display_list)
-	for i, id in ipairs(survivororder) do
+	local survorder = List.wrap(Global.survivor_display_list)
+	for i, id in ipairs(survorder) do
 		if id == rex.value then
-			survivororder:delete(i-1)
+			survorder:delete(i-1)
 		end
 	end
-
-	survivororder:insert(10, rex.value)
+	survorder:insert(10, rex.value)
 
 	-- Sprites
 	local sprite_select = 				Sprite.new("RexSelect", path.combine(SPRITE_PATH, "select.png"), 23, 56, 0)
 	local sprite_skills =				Sprite.new("RexSkills", path.combine(SPRITE_PATH, "skills.png"), 6)
 	local sprite_portrait =				Sprite.new("RexPortrait", path.combine(SPRITE_PATH, "portrait.png"), 3)
 	local sprite_portrait_small =		Sprite.new("RexPortraitSmall", path.combine(SPRITE_PATH, "portraitSmall.png"))
-	local sprite_palette = 				Sprite.new("RexPalette", path.combine(SPRITE_PATH, "palette.png"))
+	local sprite_palette1 = 			Sprite.new("RexPalette1", path.combine(SPRITE_PATH, "palette1.png"))
+	local sprite_palette2 = 			Sprite.new("RexPalette2", path.combine(SPRITE_PATH, "palette2.png"))
 	local sprite_credits = 				Sprite.new("RexCredits", path.combine(SPRITE_PATH, "credits.png"), 1, 6, 0)
 
 	local sprite_idle = 				Sprite.new("RexIdle", path.combine(SPRITE_PATH, "idle.png"), 1, 20, 36)
@@ -110,13 +109,16 @@ local function initialize()
 	rex.sprite_title = sprite_walk
 	rex.sprite_credits = sprite_credits
 
-	rex.sprite_palette = sprite_palette
-	rex.sprite_portrait_palette = sprite_palette
-	rex.sprite_loadout_palette = sprite_palette
+	rex.sprite_palette = sprite_palette1
+	-- rex.sprite_portrait_palette = sprite_palette
+	-- rex.sprite_loadout_palette = sprite_palette
 
 	rex.primary_color = Color.from_rgb(151, 177, 95)
 	rex.select_sound_id = sound_select
 	rex.cape_offset = Array.new({-5, -7, 0, 3})
+
+	rex:add_skin("RexDefault", sprite_palette1, sprite_palette1, sprite_palette1)
+	rex:add_skin("RexMaple", sprite_palette2, sprite_palette1, sprite_palette1)
 
 	Callback.add(rex.on_init, function(actor)
 		actor.sprite_idle_half = Array.new({sprite_idle, sprite_idle_half, 0})
@@ -350,6 +352,8 @@ local function initialize()
 	Callback.add(objSyringe.on_create, function(inst)
 		inst.speed = SHOOT1_SPEED
 		inst.lifetime = SHOOT1_LIFETIME
+
+		inst:actor_skin_skinnable_init();
 	end)
 
   	Callback.add(objSyringe.on_step, function(inst)
@@ -375,12 +379,18 @@ local function initialize()
 		end
 	end)
 
+	Callback.add(objSyringe.on_draw, function(inst)
+		inst:actor_skin_skinnable_draw_self();
+	end)
+
 	local objSyringeBreak = Object.new("rexSyringeBreak")
 	objSyringeBreak:set_sprite(sprite_syringe_big)
 
 	Callback.add(objSyringeBreak.on_create, function(inst)
 		inst.speed = SHOOT1_SPEED
 		inst.lifetime = SHOOT1_LIFETIME
+
+		inst:actor_skin_skinnable_init();
 	end)
 
   	Callback.add(objSyringeBreak.on_step, function(inst)
@@ -406,6 +416,10 @@ local function initialize()
 			inst:destroy()
 			return
 		end
+	end)
+
+	Callback.add(objSyringeBreak.on_draw, function(inst)
+		inst:actor_skin_skinnable_draw_self();
 	end)
 
 	--
@@ -459,6 +473,7 @@ local function initialize()
 						syringeBlast.__rex_info = ATTACK_TAG_SYRINGE_B
 					else
 						local syringe = objSyringeBreak:create(actor.x + (i * 20) + 10 * actor.image_xscale, actor.y - 5)
+						syringe:actor_skin_skinnable_set_skin(actor)
 						syringe.direction = dir
 						syringe.image_xscale = actor.image_xscale
 						syringe.parent = actor
@@ -469,6 +484,7 @@ local function initialize()
 						syringeBlast.__rex_info = ATTACK_TAG_SYRINGE
 					else
 						local syringe = objSyringe:create(actor.x + (i * 20) + 7 * actor.image_xscale, actor.y - 7)
+						syringe:actor_skin_skinnable_set_skin(actor)
 						syringe.direction = dir
 						syringe.image_xscale = actor.image_xscale
 						syringe.parent = actor
