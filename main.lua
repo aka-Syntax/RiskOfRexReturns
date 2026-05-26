@@ -59,13 +59,10 @@ local function initialize()
 	local sprite_syringe_big = 			Sprite.new("RexSyringeBig", path.combine(SPRITE_PATH, "syringeBig.png"), 1, 18, 8)
 	local sprite_debuff_break = 		Sprite.new("RexDebuffBreak", path.combine(SPRITE_PATH, "debuffBreak.png"), 1, 9, 11)
 	local sprite_debuff_weaken = 		Sprite.new("RexDebuffWeaken", path.combine(SPRITE_PATH, "debuffWeaken.png"), 1, 12, 12)
-
+	local sprite_mortar_boom = 			Sprite.new("RexMortarBoom", path.combine(SPRITE_PATH, "mortarBoom.png"), 6, 74, 202)
 	local sprite_flower = 				Sprite.new("RexFlower", path.combine(SPRITE_PATH, "flowerBomb.png"), 1, 10, 33)
 	local sprite_flower_bloom = 		Sprite.new("RexFlowerBloom", path.combine(SPRITE_PATH, "flowerbloom.png"), 5, 13, 33)
 	local sprite_flower_idle = 			Sprite.new("RexFlowerIdle", path.combine(SPRITE_PATH, "floweridle.png"), 4, 13, 33)
-
-	sprite_walk:set_speed(0.9)
-	sprite_walk_back:set_speed(0.9)
 
 	gm.sprite_set_bbox_mode(sprite_flower.value, 0)
 	sprite_flower_bloom:set_speed(0.2)
@@ -118,7 +115,7 @@ local function initialize()
 	rex.cape_offset = Array.new({-5, -7, 0, 3})
 
 	rex:add_skin("RexDefault", sprite_palette1, sprite_palette1, sprite_palette1)
-	rex:add_skin("RexMaple", sprite_palette2, sprite_palette1, sprite_palette1)
+	rex:add_skin("RexSyrup", sprite_palette2, sprite_palette1, sprite_palette1)
 
 	Callback.add(rex.on_init, function(actor)
 		actor.sprite_idle_half = Array.new({sprite_idle, sprite_idle_half, 0})
@@ -342,7 +339,6 @@ local function initialize()
 	particSyringe:set_shape(Particle.Shape.LINE)
 	particSyringe:set_life(20, 20)
 	particSyringe:set_alpha2(1, 0)
-	particSyringe:set_color2(Color.from_hex(0x5da04f), Color.from_hex(0x3d7246))
 	particSyringe:set_size(0.3, 0.3, -0.001, 0)
 	particSyringe:set_scale(1.1, 0.4)
 
@@ -394,6 +390,10 @@ local function initialize()
 	end)
 
   	Callback.add(objSyringeBreak.on_step, function(inst)
+		particSyringe:set_color2(Color.from_hex(0x5da04f), Color.from_hex(0x3d7246))
+		if inst.parent.skin_current == 1 then
+			particSyringe:set_color2(Color.from_hex(0xbf9e4d), Color.from_hex(0x81663c))
+		end
 		particSyringe:create(inst.x, inst.y - 2, 1, Particle.System.BELOW)
 
 		inst.lifetime = inst.lifetime - 1
@@ -518,7 +518,7 @@ local function initialize()
 		if inst.lifetime <= 0 then
 			if inst.parent:is_authority() then
 				for i=0, inst.parent:buff_count(buff_mirror) do
-					local hit = inst.parent:fire_explosion(inst.x + (i * 20), inst.y, SHOOT2_RADIUS*2, SHOOT2_RADIUS*2, secondary.damage, gm.constants.sEfSuperMissileExplosion, gm.constants.sSparks12).attack_info
+					local hit = inst.parent:fire_explosion(inst.x + (i * 20), inst.y, SHOOT2_RADIUS*2, SHOOT2_RADIUS*2, secondary.damage, sprite_mortar_boom, gm.constants.sSparks12).attack_info
 					hit.climb = i * 8 * 1.35
 					gm.sound_play_at(sound2_impact.value, 0.5, 0.9 + math.random() * 0.2, inst.x, inst.y)
 				end
@@ -890,7 +890,11 @@ local function initialize()
 			local direction = actor:skill_util_facing_direction()
 			local particle = Particle.find("WispGTracer")
 			particle:set_direction(direction - 50, direction + 50, 0, 0)
-			particle:create_color(actor.x, actor.y, Color.from_rgb(179, 201, 139), 20)
+			local color = Color.from_rgb(179, 201, 139)
+			if actor.skin_current == 1 then
+				color = Color.from_hex(0xfbd333)
+			end
+			particle:create_color(actor.x, actor.y, color, 20)
 
 			actor.pHspeed = ((actor.pHspeed * 0.5) + actor.pHmax * (SHOOT3_RECOIL) * -actor.image_xscale) *  charged_mult
 			if not actor:is_grounded() then
@@ -972,6 +976,7 @@ local function initialize()
 
 		inst.x = inst.x + gm.lengthdir_x(inst.speed, inst.direction)
 		inst.y = inst.y + gm.lengthdir_y(inst.speed, inst.direction)
+		inst:actor_skin_skinnable_init();
 	end)
 
 	Callback.add(objFlowerBomb.on_step, function(inst)
@@ -1008,12 +1013,17 @@ local function initialize()
 			end
 
 			local flower = objFlower:create(spawn_x, spawn_y)
+			flower:actor_skin_skinnable_set_skin(inst.parent)
 			flower.parent = inst.parent
 			flower.scepter = inst.parent:item_count(Item.find("ancientScepter"))
 
 			inst:destroy()
 			return
 		end
+	end)
+
+	Callback.add(objFlowerBomb.on_draw, function(inst)
+		inst:actor_skin_skinnable_draw_self();
 	end)
 
 	Callback.add(objFlower.on_create, function(inst)
@@ -1032,6 +1042,7 @@ local function initialize()
 		data.radius = 0
 		data.grow_t = 0
 		data.grow_done = false
+		inst:actor_skin_skinnable_init();
 	end)
 
 	Callback.add(objFlower.on_step, function(inst)
@@ -1100,6 +1111,7 @@ local function initialize()
 
 	Callback.add(objFlower.on_draw, function(inst)
 		local data = Instance.get_data(inst)
+		inst:actor_skin_skinnable_draw_self();
 		
 		if not data.active then
 			return
@@ -1122,6 +1134,9 @@ local function initialize()
 		end
 		
 		gm.draw_set_colour(Color.from_hex(0xc279b2))
+		if inst.parent.skin_current == 1 then
+			gm.draw_set_colour(Color.from_hex(0xaf3d47))
+		end
 		gm.draw_circle(inst.x, inst.y, data.radius, true)
 	end)
 
@@ -1154,6 +1169,7 @@ local function initialize()
 		if data.fired == 0 then
 			rex_inst_damage(actor, 0.24)
 			local bomb = objFlowerBomb:create(actor.x + 1 * -actor.image_xscale, actor.y - 5)
+			bomb:actor_skin_skinnable_set_skin(actor)
 			bomb.parent = actor
 			bomb.direction = actor:skill_util_facing_direction()
 			bomb.image_xscale = actor.image_xscale
