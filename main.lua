@@ -59,7 +59,10 @@ local function initialize()
 	local sprite_syringe_big = 			Sprite.new("RexSyringeBig", path.combine(SPRITE_PATH, "syringeBig.png"), 1, 18, 8)
 	local sprite_debuff_break = 		Sprite.new("RexDebuffBreak", path.combine(SPRITE_PATH, "debuffBreak.png"), 1, 9, 11)
 	local sprite_debuff_weaken = 		Sprite.new("RexDebuffWeaken", path.combine(SPRITE_PATH, "debuffWeaken.png"), 1, 12, 12)
+
 	local sprite_mortar_boom = 			Sprite.new("RexMortarBoom", path.combine(SPRITE_PATH, "mortarBoom.png"), 6, 74, 202)
+	local sprite_mortar_boom1 = 		Sprite.new("RexMortarBoom1", path.combine(SPRITE_PATH, path.combine("skinstuff", "mortarBoom_skin1.png")), 6, 74, 202)
+
 	local sprite_flower = 				Sprite.new("RexFlower", path.combine(SPRITE_PATH, "flowerBomb.png"), 1, 10, 33)
 	local sprite_flower_bloom = 		Sprite.new("RexFlowerBloom", path.combine(SPRITE_PATH, "flowerbloom.png"), 5, 13, 33)
 	local sprite_flower_idle = 			Sprite.new("RexFlowerIdle", path.combine(SPRITE_PATH, "floweridle.png"), 4, 13, 33)
@@ -231,6 +234,13 @@ local function initialize()
 		return closest
 	end
 
+	local function custom_skinnable(actor, val0, val1)
+		if actor.skin_current == 0 then
+			return val0
+		elseif actor.skin_current == 1 then
+			return val1
+		end
+	end
 
 	-- heal particle vfx
 	-- 99% of this is ssr malice code. i am so sorry
@@ -353,14 +363,16 @@ local function initialize()
 	end)
 
   	Callback.add(objSyringe.on_step, function(inst)
+		local parent = inst.parent
+
 		inst.lifetime = inst.lifetime - 1
 		if inst.lifetime < 0 then
 			inst:destroy()
 		end
 
 		for _, actor in ipairs(inst:get_collisions(gm.constants.pActorCollisionBase)) do
-			if inst.parent:attack_collision_canhit(actor) then
-				local direct = inst.parent:fire_direct(actor, primary.damage, inst.direction, inst.x, inst.y).attack_info
+			if parent:attack_collision_canhit(actor) then
+				local direct = parent:fire_direct(actor, primary.damage, inst.direction, inst.x, inst.y).attack_info
 				direct.__rex_info = ATTACK_TAG_SYRINGE
 
 				gm.sound_play_at(sound1_hit.value, 0.7, 0.6 + math.random() * 0.1, inst.x, inst.y)
@@ -390,20 +402,21 @@ local function initialize()
 	end)
 
   	Callback.add(objSyringeBreak.on_step, function(inst)
-		particSyringe:set_color2(Color.from_hex(0x5da04f), Color.from_hex(0x3d7246))
-		if inst.parent.skin_current == 1 then
-			particSyringe:set_color2(Color.from_hex(0xbf9e4d), Color.from_hex(0x81663c))
-		end
-		particSyringe:create(inst.x, inst.y - 2, 1, Particle.System.BELOW)
+		local parent = inst.parent
 
 		inst.lifetime = inst.lifetime - 1
 		if inst.lifetime < 0 then
 			inst:destroy()
 		end
 
+		local color1 = custom_skinnable(parent, Color.from_hex(0x5da04f), Color.from_hex(0xbf9e4d))
+		local color2 = custom_skinnable(parent, Color.from_hex(0x3d7246), Color.from_hex(0x81663c))
+		particSyringe:set_color2(color1, color2)
+		particSyringe:create(inst.x, inst.y - 2, 1, Particle.System.BELOW)
+
 		for _, actor in ipairs(inst:get_collisions(gm.constants.pActorCollisionBase)) do
-			if inst.parent:attack_collision_canhit(actor) then
-				local direct = inst.parent:fire_direct(actor, primary.damage, inst.direction, inst.x, inst.y).attack_info
+			if parent:attack_collision_canhit(actor) then
+				local direct = parent:fire_direct(actor, primary.damage, inst.direction, inst.x, inst.y).attack_info
 				direct.__rex_info = ATTACK_TAG_SYRINGE_B
 
 				gm.sound_play_at(sound1_3hit.value, 0.7, 0.6 + math.random() * 0.1, inst.x, inst.y)
@@ -512,13 +525,15 @@ local function initialize()
 
 	Callback.add(objMortar.on_step, function(inst)
 		local data = Instance.get_data(inst)
+		local parent = inst.parent
 
 		inst.lifetime = inst.lifetime - 1
 
 		if inst.lifetime <= 0 then
-			if inst.parent:is_authority() then
-				for i=0, inst.parent:buff_count(buff_mirror) do
-					local hit = inst.parent:fire_explosion(inst.x + (i * 20), inst.y, SHOOT2_RADIUS*2, SHOOT2_RADIUS*2, secondary.damage, sprite_mortar_boom, gm.constants.sSparks12).attack_info
+			if parent:is_authority() then
+				for i=0, parent:buff_count(buff_mirror) do
+					local sprite = custom_skinnable(parent, sprite_mortar_boom, sprite_mortar_boom1)
+					local hit = parent:fire_explosion(inst.x + (i * 20), inst.y, SHOOT2_RADIUS*2, SHOOT2_RADIUS*2, secondary.damage, sprite, gm.constants.sSparks12).attack_info
 					hit.climb = i * 8 * 1.35
 					gm.sound_play_at(sound2_impact.value, 0.5, 0.9 + math.random() * 0.2, inst.x, inst.y)
 				end
@@ -540,16 +555,16 @@ local function initialize()
 
 
 	Callback.add(objPreview.on_draw, function(inst)
-		local actor = inst.parent
-		if actor:get_active_skill(1).skill_id == secondary.value then
-			if actor.aiming == 1 then
-				local target = find_horizontal_enemy(actor)
+		local parent = inst.parent
+		if parent:get_active_skill(1).skill_id == secondary.value then
+			if parent.aiming == 1 then
+				local target = find_horizontal_enemy(parent)
 				if target then
 					inst.x = target.x
 					inst.y = target.y
 				else
-					inst.x = actor.x + 175 * actor.image_xscale
-					inst.y = actor.y - 5
+					inst.x = parent.x + 175 * parent.image_xscale
+					inst.y = parent.y - 5
 				end
 
 				gm.draw_set_colour(Color.from_hsv(0, 0, 100))
@@ -590,7 +605,8 @@ local function initialize()
 		data.fired = 0
 
 		if gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) ~= 0 then
-			actor.hold_facing_direction_xscale = gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft)) -- stupid dumb idiotic bullshit fuckery, apparently vanilla code also uses that lmao
+			-- stupid dumb idiotic bullshit fuckery, apparently vanilla code also uses that lmao
+			actor.hold_facing_direction_xscale = gm.sign(gm.real(actor.moveRight) - gm.real(actor.moveLeft))
 		else
 			actor.hold_facing_direction_xscale = actor.image_xscale
 		end
@@ -717,7 +733,7 @@ local function initialize()
 	-- end)
 
 	-- Callback.add(objPreview2.on_draw, function(inst)
-	-- 	local actor = inst.parent
+	-- 	local parent = inst.parent
 
 	-- 	if actor:get_active_skill(1).skill_id == secondary2.value then
 	-- 		if actor.aiming == 1 then
@@ -890,10 +906,8 @@ local function initialize()
 			local direction = actor:skill_util_facing_direction()
 			local particle = Particle.find("WispGTracer")
 			particle:set_direction(direction - 50, direction + 50, 0, 0)
-			local color = Color.from_rgb(179, 201, 139)
-			if actor.skin_current == 1 then
-				color = Color.from_hex(0xfbd333)
-			end
+
+			local color = custom_skinnable(actor, Color.from_rgb(179, 201, 139), Color.from_hex(0xfbd333))
 			particle:create_color(actor.x, actor.y, color, 20)
 
 			actor.pHspeed = ((actor.pHspeed * 0.5) + actor.pHmax * (SHOOT3_RECOIL) * -actor.image_xscale) *  charged_mult
@@ -943,9 +957,10 @@ local function initialize()
 	-- i sincerely apologize to the starstorm returns team for violently dismembering their code and using the pieces to construct my own abhorrent abominations
 	Callback.add(objFlowerPull.on_step, function(inst)
 		local data = Instance.get_data(inst)
+		local parent = inst.parent
 
 		for _, target in ipairs(inst:get_collisions_circle(gm.constants.pActor, SHOOT4_RADIUS, inst.x, inst.y)) do
-			if inst.parent:attack_collision_canhit(target) and not target:is_climbing() and not target.intangible then
+			if parent:attack_collision_canhit(target) and not target:is_climbing() and not target.intangible then
 				local t = 1 - inst.lifetime / SHOOT4_PULL_LIFETIME
 				local falloff = (1 - t)^2
 				local strength = math.max(0.1, 12 * falloff)
@@ -1081,9 +1096,9 @@ local function initialize()
 			end
 
 			for _, target in ipairs(inst:get_collisions_circle(gm.constants.pActor, radius, inst.x, inst.y)) do
-				if inst.parent:attack_collision_canhit(target) then
+				if parent:attack_collision_canhit(target) then
 					local dir = Math.direction(inst.x, inst.y, target.x, target.y)
-					for i=0, inst.parent:buff_count(buff_mirror) do
+					for i=0, parent:buff_count(buff_mirror) do
 
 						local hit = parent:fire_direct(target, damage, dir, inst.x, inst.y, nil).attack_info
 						hit.climb = i * 8 * 1.35
@@ -1133,10 +1148,8 @@ local function initialize()
 			data.radius = (inst.scepter > 0) and SHOOT4S_RADIUS or SHOOT4_RADIUS
 		end
 		
-		gm.draw_set_colour(Color.from_hex(0xc279b2))
-		if inst.parent.skin_current == 1 then
-			gm.draw_set_colour(Color.from_hex(0xaf3d47))
-		end
+		local color = custom_skinnable(inst.parent, Color.from_hex(0xc279b2), Color.from_hex(0xaf3d47))
+		gm.draw_set_colour(color)
 		gm.draw_circle(inst.x, inst.y, data.radius, true)
 	end)
 
