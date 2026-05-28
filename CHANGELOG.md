@@ -1,9 +1,19 @@
+### v1.1.4
+
+Skins are here! Each skin has its own unique colors for VFX.
+I haven't implemented the palettes for the portraits, and I still need to redo the character select animation before skin-related work. Networking is probably the next big thing to work towards (yay headaches)
+
+* Added new skins: Syrup, Verdant, Weald
+* Mortar delay 0.5s -> 0.4s
+* Mortar radius 60 -> 48
+
+*Still big enough to hit walking Lemurians.*
+
 ### v1.1.3
 
 * Forgot to change flower cooldown back to normal :p
 * Fixed flower not lifestealing
 * Updated lifesteal trail; produces a constant line regardless of distance 
-
 * Damage 10+2.8 -> 10+3
 * INJECT debuff cap 999 -> 10
 

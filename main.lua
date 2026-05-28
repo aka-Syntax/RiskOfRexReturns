@@ -29,9 +29,11 @@ local function initialize()
 	local sprite_skills =				Sprite.new("RexSkills", path.combine(SPRITE_PATH, "skills.png"), 6)
 	local sprite_portrait =				Sprite.new("RexPortrait", path.combine(SPRITE_PATH, "portrait.png"), 3)
 	local sprite_portrait_small =		Sprite.new("RexPortraitSmall", path.combine(SPRITE_PATH, "portraitSmall.png"))
+	local sprite_credits = 				Sprite.new("RexCredits", path.combine(SPRITE_PATH, "credits.png"), 1, 6, 0)
+	local sprite_palette0 = 			Sprite.new("RexPalette0", path.combine(SPRITE_PATH, "palette0.png"))
 	local sprite_palette1 = 			Sprite.new("RexPalette1", path.combine(SPRITE_PATH, "palette1.png"))
 	local sprite_palette2 = 			Sprite.new("RexPalette2", path.combine(SPRITE_PATH, "palette2.png"))
-	local sprite_credits = 				Sprite.new("RexCredits", path.combine(SPRITE_PATH, "credits.png"), 1, 6, 0)
+	local sprite_palette3 = 			Sprite.new("RexPalette3", path.combine(SPRITE_PATH, "palette3.png"))
 
 	local sprite_idle = 				Sprite.new("RexIdle", path.combine(SPRITE_PATH, "idle.png"), 1, 20, 36)
 	local sprite_idle_half = 			Sprite.new("RexIdleHalf", path.combine(SPRITE_PATH, "idleHalf.png"), 1, 20, 36)
@@ -62,6 +64,8 @@ local function initialize()
 
 	local sprite_mortar_boom = 			Sprite.new("RexMortarBoom", path.combine(SPRITE_PATH, "mortarBoom.png"), 6, 74, 202)
 	local sprite_mortar_boom1 = 		Sprite.new("RexMortarBoom1", path.combine(SPRITE_PATH, path.combine("skinstuff", "mortarBoom_skin1.png")), 6, 74, 202)
+	local sprite_mortar_boom2 = 		Sprite.new("RexMortarBoom2", path.combine(SPRITE_PATH, path.combine("skinstuff", "mortarBoom_skin2.png")), 6, 74, 202)
+	local sprite_mortar_boom3 = 		Sprite.new("RexMortarBoom3", path.combine(SPRITE_PATH, path.combine("skinstuff", "mortarBoom_skin3.png")), 6, 74, 202)
 
 	local sprite_flower = 				Sprite.new("RexFlower", path.combine(SPRITE_PATH, "flowerBomb.png"), 1, 10, 33)
 	local sprite_flower_bloom = 		Sprite.new("RexFlowerBloom", path.combine(SPRITE_PATH, "flowerbloom.png"), 5, 13, 33)
@@ -109,7 +113,7 @@ local function initialize()
 	rex.sprite_title = sprite_walk
 	rex.sprite_credits = sprite_credits
 
-	rex.sprite_palette = sprite_palette1
+	rex.sprite_palette = sprite_palette0
 	-- rex.sprite_portrait_palette = sprite_palette
 	-- rex.sprite_loadout_palette = sprite_palette
 
@@ -117,8 +121,10 @@ local function initialize()
 	rex.select_sound_id = sound_select
 	rex.cape_offset = Array.new({-5, -7, 0, 3})
 
-	rex:add_skin("RexDefault", sprite_palette1, sprite_palette1, sprite_palette1)
-	rex:add_skin("RexSyrup", sprite_palette2, sprite_palette1, sprite_palette1)
+	rex:add_skin("RexDefault", sprite_palette0, sprite_palette0, sprite_palette0)
+	rex:add_skin("RexSyrup", sprite_palette1, sprite_palette0, sprite_palette0)
+	rex:add_skin("RexVerdant", sprite_palette2, sprite_palette0, sprite_palette0)
+	rex:add_skin("RexWeald", sprite_palette3, sprite_palette0, sprite_palette0)
 
 	Callback.add(rex.on_init, function(actor)
 		actor.sprite_idle_half = Array.new({sprite_idle, sprite_idle_half, 0})
@@ -159,8 +165,8 @@ local function initialize()
 	local BREAK_DEBUFF_DURATION = 4 * 60
 
 	local SHOOT2_DAMAGE = 2
-	local SHOOT2_DELAY = 0.5 * 60
-	local SHOOT2_RADIUS = 60
+	local SHOOT2_DELAY = 0.4 * 60
+	local SHOOT2_RADIUS = 48
 
 	local SHOOT3_DAMAGE = 0.5
 	local SHOOT3_KNOCKBACK = 8.5
@@ -234,11 +240,15 @@ local function initialize()
 		return closest
 	end
 
-	local function custom_skinnable(actor, val0, val1)
+	local function custom_skinnable(actor, val0, val1, val2, val3)
 		if actor.skin_current == 0 then
 			return val0
 		elseif actor.skin_current == 1 then
 			return val1
+		elseif actor.skin_current == 2 then
+			return val2
+		elseif actor.skin_current == 3 then
+			return val3
 		end
 	end
 
@@ -409,8 +419,18 @@ local function initialize()
 			inst:destroy()
 		end
 
-		local color1 = custom_skinnable(parent, Color.from_hex(0x5da04f), Color.from_hex(0xbf9e4d))
-		local color2 = custom_skinnable(parent, Color.from_hex(0x3d7246), Color.from_hex(0x81663c))
+		local color1 = custom_skinnable(parent,
+			Color.from_hex(0x5da04f),
+			Color.from_hex(0xbf9e4d),
+			Color.from_hex(0x52a587),
+			Color.from_hex(0x7155ad)
+		)
+		local color2 = custom_skinnable(parent,
+			Color.from_hex(0x3d7246),
+			Color.from_hex(0x81663c),
+			Color.from_hex(0x407776),
+			Color.from_hex(0x453b7a)
+		)
 		particSyringe:set_color2(color1, color2)
 		particSyringe:create(inst.x, inst.y - 2, 1, Particle.System.BELOW)
 
@@ -532,7 +552,12 @@ local function initialize()
 		if inst.lifetime <= 0 then
 			if parent:is_authority() then
 				for i=0, parent:buff_count(buff_mirror) do
-					local sprite = custom_skinnable(parent, sprite_mortar_boom, sprite_mortar_boom1)
+					local sprite = custom_skinnable(parent,
+						sprite_mortar_boom,
+						sprite_mortar_boom1,
+						sprite_mortar_boom2,
+						sprite_mortar_boom3
+					)
 					local hit = parent:fire_explosion(inst.x + (i * 20), inst.y, SHOOT2_RADIUS*2, SHOOT2_RADIUS*2, secondary.damage, sprite, gm.constants.sSparks12).attack_info
 					hit.climb = i * 8 * 1.35
 					gm.sound_play_at(sound2_impact.value, 0.5, 0.9 + math.random() * 0.2, inst.x, inst.y)
@@ -907,7 +932,12 @@ local function initialize()
 			local particle = Particle.find("WispGTracer")
 			particle:set_direction(direction - 50, direction + 50, 0, 0)
 
-			local color = custom_skinnable(actor, Color.from_rgb(179, 201, 139), Color.from_hex(0xfbd333))
+			local color = custom_skinnable(actor,
+				Color.from_hex(0xb3c98b),
+				Color.from_hex(0xf0d29c),
+				Color.from_hex(0x79d1ae),
+				Color.from_hex(0x6bc2b5)
+			)
 			particle:create_color(actor.x, actor.y, color, 20)
 
 			actor.pHspeed = ((actor.pHspeed * 0.5) + actor.pHmax * (SHOOT3_RECOIL) * -actor.image_xscale) *  charged_mult
@@ -1148,7 +1178,12 @@ local function initialize()
 			data.radius = (inst.scepter > 0) and SHOOT4S_RADIUS or SHOOT4_RADIUS
 		end
 		
-		local color = custom_skinnable(inst.parent, Color.from_hex(0xc279b2), Color.from_hex(0xaf3d47))
+		local color = custom_skinnable(inst.parent,
+			Color.from_hex(0xc279b2),
+			Color.from_hex(0xaf3d47),
+			Color.from_hex(0xbc4ac2),
+			Color.from_hex(0x59acaf)
+		)
 		gm.draw_set_colour(color)
 		gm.draw_circle(inst.x, inst.y, data.radius, true)
 	end)
