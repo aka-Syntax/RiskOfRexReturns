@@ -250,6 +250,7 @@ local function initialize()
 		elseif actor.skin_current == 3 then
 			return val3
 		end
+		return val0
 	end
 
 	-- heal particle vfx
