@@ -1,3 +1,9 @@
+### v1.1.5
+
+* Added a fallback return value to custom skin function
+
+gravity circuit is free to download on steam until june 15th btw
+
 ### v1.1.4
 
 Skins are here! Each skin has its own unique colors for VFX.
