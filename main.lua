@@ -166,7 +166,7 @@ local function initialize()
 	-- rex:add_skill(Skill.Slot.SECONDARY, secondary2)
 
 	-- magic number bullshit
-	local SHOOT1_DAMAGE = 0.3
+	local SHOOT1_DAMAGE = 0.35
 	local SHOOT1_SPEED = 20
 	local SHOOT1_LIFETIME = 2 * 60
 	local SHOOT1_LIFESTEAL = 0.3
@@ -177,7 +177,7 @@ local function initialize()
 	local SHOOT2_RADIUS = 48
 
 	local SHOOT3_DAMAGE = 0.5
-	local SHOOT3_KNOCKBACK = 8.5
+	local SHOOT3_KNOCKBACK = 9.5
 	local SHOOT3_RECOIL = 3.5
 	local SHOOT3_LIFESTEAL = 0.6
 	local WEAKEN_DEBUFF_DURATION = 3 * 60
@@ -189,7 +189,7 @@ local function initialize()
 	local SHOOT4_PULL_LIFETIME = 0.2 * 60
 	local SHOOT4_LIFESTEAL = 0.25
 
-	local SHOOT4S_RADIUS = 240
+	local SHOOT4S_RADIUS = 250
 	local SHOOT4S_EXPLODE = 7
 
 	-- local SHOOT2B_DAMAGE = 2.0
@@ -336,11 +336,11 @@ local function initialize()
 	debuffRexBreak.is_timed = true
 	debuffRexBreak.is_debuff = true
 	debuffRexBreak.show_icon = true
-	debuffRexBreak.max_stack = 10
+	debuffRexBreak.max_stack = -1
 	
 	RecalculateStats.add(function(actor, api)
 		if actor:buff_count(debuffRexBreak) > 0 then
-			api.armor_add(-3 * actor:buff_count(debuffRexBreak))
+			api.armor_add(-2 * actor:buff_count(debuffRexBreak))
 		end
 	end)
 
@@ -1254,10 +1254,10 @@ local function initialize()
 			elseif attack_tag ==  ATTACK_TAG_SYRINGE_B then
 				GM.apply_buff(target, debuffRexBreak, BREAK_DEBUFF_DURATION, 1)
 
-				local inst = efRexHeal:create(hit_info.x, hit_info.y)
-				inst.parent = hit_info.attack_info.parent
-				Instance.get_data(inst).target = target
-				Instance.get_data(inst).heal_amt = hit_info.damage * SHOOT1_LIFESTEAL
+				-- local inst = efRexHeal:create(hit_info.x, hit_info.y)
+				-- inst.parent = hit_info.attack_info.parent
+				-- Instance.get_data(inst).target = target
+				-- Instance.get_data(inst).heal_amt = hit_info.damage * SHOOT1_LIFESTEAL
 
 			elseif attack_tag == ATTACK_TAG_BOOM then
 				GM.apply_buff(target, debuffRexWeaken, WEAKEN_DEBUFF_DURATION, 1)

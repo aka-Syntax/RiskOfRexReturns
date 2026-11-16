@@ -2,7 +2,7 @@ return {
 	skill = {
 		rexZ = {
 			name = "INJECT",
-			description = "Fire three syringes that deal <y>3x30% damage</c> and <y>reduce armor.</c> The last syringe has <g>30% lifesteal.</c>"
+			description = "Fire three syringes that deal <y>3x35% damage</c> and <y>reduce armor.</c>"
 		},
 		rexX = {
 			name = "Seed Mortar",
