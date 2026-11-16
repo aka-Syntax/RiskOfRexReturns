@@ -15,6 +15,7 @@ local SOUND_PATH = path.combine(PATH, "Sounds")
 
 local function initialize()
 	local rex = Survivor.new("rex")
+	-- log.debug("hi")
 
 	local survorder = List.wrap(Global.survivor_display_list)
 	for i, id in ipairs(survorder) do
@@ -71,6 +72,8 @@ local function initialize()
 	local sprite_flower_bloom = 		Sprite.new("RexFlowerBloom", path.combine(SPRITE_PATH, "flowerbloom.png"), 5, 13, 33)
 	local sprite_flower_idle = 			Sprite.new("RexFlowerIdle", path.combine(SPRITE_PATH, "floweridle.png"), 4, 13, 33)
 
+	local sprite_log = 					Sprite.new("RexLog", path.combine(SPRITE_PATH, "logbook.png"))
+
 	gm.sprite_set_bbox_mode(sprite_flower.value, 0)
 	sprite_flower_bloom:set_speed(0.2)
 	sprite_flower_idle:set_speed(0.15)
@@ -116,6 +119,11 @@ local function initialize()
 	rex.sprite_palette = sprite_palette0
 	-- rex.sprite_portrait_palette = sprite_palette
 	-- rex.sprite_loadout_palette = sprite_palette
+
+	local rex_log = SurvivorLog.new_from_survivor(rex)
+	rex_log.portrait_id = sprite_log
+	rex_log.sprite_id = sprite_walk
+	rex_log.sprite_icon_id = sprite_portrait
 
 	rex.primary_color = Color.from_rgb(151, 177, 95)
 	rex.select_sound_id = sound_select
@@ -181,9 +189,8 @@ local function initialize()
 	local SHOOT4_PULL_LIFETIME = 0.2 * 60
 	local SHOOT4_LIFESTEAL = 0.25
 
-	local SHOOT4S_DAMAGE = 1.35
-	local SHOOT4S_RADIUS = 250
-	local SHOOT4S_LIFESTEAL = 0.40
+	local SHOOT4S_RADIUS = 240
+	local SHOOT4S_EXPLODE = 7
 
 	-- local SHOOT2B_DAMAGE = 2.0
 	-- local SHOOT2B_LIFETIME = 2 * 60
@@ -195,7 +202,6 @@ local function initialize()
 	local ATTACK_TAG_SYRINGE_B = 2
 	local ATTACK_TAG_BOOM = 3
 	local ATTACK_TAG_GROWTH = 4
-	local ATTACK_TAG_GROWTH_S = 5
 
 	-- Self-damage function
 	-- just doing what midas does
@@ -459,6 +465,7 @@ local function initialize()
 	--
 	-- Primary: INJECT
 	--
+	-- fox: retain the directional lock whenever primary is held
 	local statePrimary = ActorState.new("rexPrimary")
 	primary.sprite = sprite_skills
 	primary.subimage = 0
@@ -487,7 +494,7 @@ local function initialize()
 		actor:skill_util_step_strafe_sprites()
 		actor:skill_util_strafe_turn_update()
 
-		-- fire the bullet every 2nd frame (may change to every 3rd)
+		-- fire the bullet every 2nd frame
 		if actor.image_index2 >= data.shots * 2 and data.shots < 3 then
 			local dir = actor:skill_util_facing_direction()
 
@@ -989,8 +996,9 @@ local function initialize()
 	Callback.add(objFlowerPull.on_step, function(inst)
 		local data = Instance.get_data(inst)
 		local parent = inst.parent
+		local radius = (inst.scepter > 0) and SHOOT4S_RADIUS or SHOOT4_RADIUS
 
-		for _, target in ipairs(inst:get_collisions_circle(gm.constants.pActor, SHOOT4_RADIUS, inst.x, inst.y)) do
+		for _, target in ipairs(inst:get_collisions_circle(gm.constants.pActor, radius, inst.x, inst.y)) do
 			if parent:attack_collision_canhit(target) and not target:is_climbing() and not target.intangible then
 				local t = 1 - inst.lifetime / SHOOT4_PULL_LIFETIME
 				local falloff = (1 - t)^2
@@ -1122,8 +1130,6 @@ local function initialize()
 
 			if boosted then
 				radius = SHOOT4S_RADIUS
-				damage = SHOOT4S_DAMAGE
-				lifesteal = ATTACK_TAG_GROWTH_S
 			end
 
 			for _, target in ipairs(inst:get_collisions_circle(gm.constants.pActor, radius, inst.x, inst.y)) do
@@ -1147,9 +1153,13 @@ local function initialize()
 			gm.sound_play_at(sound4_pull.value, 0.5, 0.8 + math.random() * 0.1, inst.x, inst.y)
 
 			if data.pulses_left <= 0 then
-				inst:destroy()
+				if boosted then
+					parent:fire_explosion(inst.x, inst.y, SHOOT4S_RADIUS*1.5, SHOOT4S_RADIUS*1.5, SHOOT4S_EXPLODE, gm.constants.sEfSuperMissileExplosion, gm.constants.sSparks12)
+				end
 				-- play destroy sound (LATER)
 				gm.sound_play_at(sound4_expire.value, 0.5, 0.8 + math.random() * 0.1, inst.x, inst.y)
+				
+				inst:destroy()
 				return
 			end
 		end
@@ -1197,7 +1207,7 @@ local function initialize()
 
 	specialS.sprite = sprite_skills
 	specialS.subimage = 4
-	specialS.damage = SHOOT4S_DAMAGE
+	specialS.damage = SHOOT4_DAMAGE
 	specialS.cooldown = 14 * 60
 
 	local stateSpecial = ActorState.new("rexSpecial")
@@ -1267,16 +1277,16 @@ local function initialize()
 				Instance.get_data(inst).target = target
 				Instance.get_data(inst).heal_amt = hit_info.damage * SHOOT4_LIFESTEAL
 
-			-- i love being lazy
-			elseif attack_tag == ATTACK_TAG_GROWTH_S then
-				local slow = Buff.find("slow")
-				GM.apply_buff(target, debuffRexRoot, SHOOT4_PULL_LIFETIME, 1)
-				GM.apply_buff(target, slow, 1 * 60, 1)
+			-- -- i love being lazy
+			-- elseif attack_tag == ATTACK_TAG_GROWTH_S then
+			-- 	local slow = Buff.find("slow")
+			-- 	GM.apply_buff(target, debuffRexRoot, SHOOT4_PULL_LIFETIME, 1)
+			-- 	GM.apply_buff(target, slow, 1 * 60, 1)
 
-				local inst = efRexHeal:create(hit_info.x, hit_info.y)
-				inst.parent = hit_info.attack_info.parent
-				Instance.get_data(inst).target = target
-				Instance.get_data(inst).heal_amt = hit_info.damage * SHOOT4S_LIFESTEAL
+			-- 	local inst = efRexHeal:create(hit_info.x, hit_info.y)
+			-- 	inst.parent = hit_info.attack_info.parent
+			-- 	Instance.get_data(inst).target = target
+			-- 	Instance.get_data(inst).heal_amt = hit_info.damage * SHOOT4S_LIFESTEAL
 			end
 		end
 	end)

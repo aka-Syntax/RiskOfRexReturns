@@ -1,3 +1,10 @@
+### v1.2.0
+
+Heh, sorry to keep you waiting!
+
+* Added REX's logbook!
+* Changed REX's scepter: Flower has increased pull radius and explodes for 700% damage when expiring
+
 ### v1.1.5
 
 * Added a fallback return value to custom skin function
