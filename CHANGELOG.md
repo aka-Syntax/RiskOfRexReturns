@@ -1,3 +1,7 @@
+### v1.2.1
+
+* REX logbook now shows up between Merc's and Loader's
+
 ### v1.2.0
 
 Heh, sorry to keep you waiting!

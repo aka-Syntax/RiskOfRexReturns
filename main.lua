@@ -124,6 +124,14 @@ local function initialize()
 	rex_log.portrait_id = sprite_log
 	rex_log.sprite_id = sprite_walk
 	rex_log.sprite_icon_id = sprite_portrait
+	
+	local survlogorder = List.wrap(Global.survivor_log_display_list)
+	for i, id in ipairs(survlogorder) do
+		if id == rex_log.value then
+			survlogorder:delete(i-1)
+		end
+	end
+	survlogorder:insert(10, rex_log.value)
 
 	rex.primary_color = Color.from_rgb(151, 177, 95)
 	rex.select_sound_id = sound_select
